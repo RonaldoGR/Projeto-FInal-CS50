@@ -1,0 +1,13 @@
+# Ignorar o diretório de ambiente virtual
+venv/
+
+# Ignorar arquivos de configuração de ambientes de desenvolvimento
+__pycache__/
+*.py[cod]
+
+# Ignorar pacotes instalados
+*.egg-info/
+*.whl
+
+# Ignorar arquivos de lock
+Pipfile.lock
