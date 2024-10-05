@@ -1,0 +1,70 @@
+
+main {
+  padding: 200px 0px;
+  margin: 0 20px;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+h1, h2 {
+  margin: 10px 100px;
+}
+
+p {
+  width: 50%;
+}
+
+footer {
+  margin: 20px;
+  text-align: center;
+}
+
+
+#pizza2 {
+  margin-top: 75%;
+  margin-left: 0px;
+  position: absolute;
+  width: 100%;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  width: 50%; /* Largura de 50% */
+  height: 100%; /* Altura total */
+  z-index: -1; 
+}
+
+#pizza {
+
+  
+  position: absolute;
+  width: 100%;
+  height: 100vh;
+  top: 0;
+  right: 0;
+  width: 50%; /* Largura de 50% */
+  height: 100%; /* Altura total */
+  z-index: -1; 
+
+}
+
+#imagepizza1 {
+  top: 0;
+  right: 0;
+  margin: 0;
+  padding: 0;
+  width: 100%; /* Largura de 50% */
+  height: 100%; /* Altura total */
+  z-index: -1; 
+  
+}
+
+#imagepizza2 {
+  
+  left: 0;
+  margin: 0;
+  padding: 0;
+  width: 100%; /* Largura de 50% */
+  height: 100%; /* Altura total */
+  z-index: -1; 
+}
