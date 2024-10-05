@@ -1,10 +1,21 @@
 
+.navbar {
+  z-index: 100; /* Garantir que a navbar fique acima de outros elementos */
+  background-color: blue; /* Fundo vermelho transparente */
+  left:0;
+}
+
+body {
+  position: relative;
+}
+
 main {
   padding: 200px 0px;
   margin: 0 20px;
   display: flex;
   flex-direction: column;
   text-align: left;
+  
 }
 
 h1, h2 {
@@ -21,50 +32,65 @@ footer {
 }
 
 
-#pizza2 {
-  margin-top: 75%;
-  margin-left: 0px;
-  position: absolute;
-  width: 100%;
-  height: 100vh;
-  top: 0;
-  left: 0;
-  width: 50%; /* Largura de 50% */
-  height: 100%; /* Altura total */
-  z-index: -1; 
+.reset {
+  padding: 15px;
 }
 
-#pizza {
 
-  
-  position: absolute;
-  width: 100%;
-  height: 100vh;
-  top: 0;
-  right: 0;
-  width: 50%; /* Largura de 50% */
-  height: 100%; /* Altura total */
-  z-index: -1; 
 
-}
-
+/* Estilo de imagem principal */
 #imagepizza1 {
+  width: 50%;
   top: 0;
   right: 0;
-  margin: 0;
-  padding: 0;
-  width: 100%; /* Largura de 50% */
-  height: 100%; /* Altura total */
-  z-index: -1; 
+  max-width: 1200px;
+  height: auto;
+  margin: 20px auto;
+  position: absolute;
+  z-index: 0;
   
 }
 
 #imagepizza2 {
-  
+  margin-left: 0;
+  position: relative;
+  width: 80%;
+  max-width: 1200px;
+  height: auto;
+  top: 0;
   left: 0;
-  margin: 0;
-  padding: 0;
-  width: 100%; /* Largura de 50% */
-  height: 100%; /* Altura total */
-  z-index: -1; 
+  z-index: 1; 
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 700px) {
+
+  #imagepizza {
+    width: 100%; /* Agora ocupa toda a largura, como a #imagepizza1 */
+    max-width: 600px;
+    height: auto; /* Mantém a proporção correta */
+    margin: 0; /* Remove margens extras */
+    padding: 0;
+    
+  
+  }
+
+  p {
+    width: 100%; /* O texto também ocupa 100% da tela em dispositivos menores */
+  }
+  #imagepizza2 {
+    width: 100%; /* Agora ocupa toda a largura, como a #imagepizza1 */
+    max-width: 600px;
+    height: auto; /* Mantém a proporção correta */
+    margin: 0; /* Remove margens extras */
+    padding: 0;
+  
+  }
+  
+}
+
+ @media (max-width: 400px) {
+  p {
+    width: 50%; /* Ajuste para telas menores */
+  }
 }

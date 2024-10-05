@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Log In
+{% endblock %}  
+
+{% block main %}
+<form  class="text-center"  action="/login" method="post">
+  <div class="mb-3">
+      <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="username" placeholder="Username" type="text">
+  </div>
+  <div class="mb-3">
+      <input class="form-control mx-auto w-auto" name="password" placeholder="Password" type="password">
+  </div>
+  <button class="btn btn-primary" type="submit">Log In</button>
+</form>
+<form class="text-center" action="/reset" method="get">
+  <div class="reset">
+      <button class="btn btn-primary" name="forgot" type="submit">Reset password?</button>
+  </div>
+</form>
+<img id="imagepizza1" src="../static/images/pizzaprincipal2.png" alt="pizza" srcset=""  style="width: 30%; max-width: auto ; height: auto;">
+
+<img id="imagepizza2" src="/static/images/pizzaprincipal4.png" alt="pizza 2" srcset="" style="width: 50%; max-width: auto ; height: auto;">
+
+
+
+{% endblock %}
