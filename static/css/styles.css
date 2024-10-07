@@ -7,6 +7,7 @@
 
 body {
   position: relative;
+  background-color:#fde3e3;
 }
 
 main {
@@ -62,22 +63,26 @@ footer {
   z-index: 1; 
 }
 
-/* Responsividade para telas menores */
-@media (max-width: 700px) {
+button {
+  margin-left: 30px;
+}
 
-  #imagepizza {
-    width: 100%; /* Agora ocupa toda a largura, como a #imagepizza1 */
-    max-width: 600px;
-    height: auto; /* Mantém a proporção correta */
-    margin: 0; /* Remove margens extras */
-    padding: 0;
-    
+@media (max-width: 1010px) {
+  #imagepizza1 {
+    display: flex;
+    flex-direction: column;
+    width: 200px;
   
   }
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 700px) {
 
   p {
     width: 100%; /* O texto também ocupa 100% da tela em dispositivos menores */
   }
+
   #imagepizza2 {
     width: 100%; /* Agora ocupa toda a largura, como a #imagepizza1 */
     max-width: 600px;
@@ -86,6 +91,7 @@ footer {
     padding: 0;
   
   }
+
   
 }
 
