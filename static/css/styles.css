@@ -10,7 +10,7 @@ body {
   background-color:#fde3e3;
 }
 
-main {
+#main_index {
   padding: 200px 0px;
   margin: 0 20px;
   display: flex;
@@ -27,7 +27,7 @@ main {
   max-width:700px;
 }
 
-h1, h2 {
+#title_index, #subtitle_index {
   margin: 10px 100px;
 }
 

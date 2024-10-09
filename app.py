@@ -203,6 +203,16 @@ def register():
       
    return render_template("register.html")
 
+
+@app.route("/menu", methods=["GET", "POST"])
+def menu():
+   return render_template("menu.html")
+
+
+
+
+
+
 if __name__ == "__main__":
     # Chama a função para criar a tabela antes de iniciar o servidor
     create_table()
