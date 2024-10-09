@@ -10,6 +10,36 @@ body {
   background-color:#fde3e3;
 }
 
+#menu_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+
+#title_menu {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.menu_products {
+  margin-top: 50px;
+  margin-left: 15%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+
+}
+
+#pizzas, #sobremesas, #bebidas {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+  text-align: center;
+}
+
 #main_index {
   padding: 200px 0px;
   margin: 0 20px;
@@ -74,6 +104,22 @@ footer {
 #register {
  margin-left: 42%;  
  
+}
+
+
+.pizzas {
+  max-width: 30%;
+  margin-bottom: 40px;
+}
+.bebidas {
+  max-width: 10%;
+  margin-bottom: 40px;
+  margin-right: 10%;
+}
+.sobremesas {
+  max-width: 30%;
+  margin-bottom: 40px;
+  margin-right: 10%;
 }
 
 @media (max-width: 1010px) {
