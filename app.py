@@ -1,4 +1,4 @@
-from flask import Flask, flash, redirect, render_template, request, session, url_for
+from flask import Flask, flash, redirect, render_template, request, session, url_for, json
 from flask_session import Session
 from functools import wraps
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -206,7 +206,11 @@ def register():
 
 @app.route("/menu", methods=["GET", "POST"])
 def menu():
-   return render_template("menu.html")
+   isLoggedIn = "user_id" in session
+   print(f"O usuário está logado {isLoggedIn}")
+   if request.method == "POST":
+       return render_template("menu.html", isLoggedIn = isLoggedIn)
+   return render_template("menu.html", isLoggedIn = isLoggedIn)
 
 
 

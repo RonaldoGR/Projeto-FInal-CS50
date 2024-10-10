@@ -7,129 +7,139 @@
 {% block main %}
 <h1 id="title_menu">Menu CS50 Pizza Restaurant</h1>
 <h4 id="pizzas">Pizzas</h4>
-<div id="menu_conatainer">
-  <div class="menu_products">
-    <div class="pizzas">
-      <h6>Pizza de Calabresa</h6>
-      <p>Ingredientes: Massa artesanal, molho de tomate, mozzarela, calabresa, cebola roxa e orégano.<br>
-        <strong>Valor: R$50,00</strong></p>
-        <button>Adicionar ao carrinho</button>
-    </div>
-    
-    <div class="pizzas">
-      <h6>Pizza de Calabresa</h6>
-      <p>Ingredientes: Massa artesanal, molho de tomate, mozzarela, calabresa, cebola roxa e orégano.<br>
-        <strong>Valor: R$50,00</strong></p>
-        <button>Adicionar ao carrinho</button>
-    </div>
-    
-    <div class="pizzas">
-      <h6>Pizza de Calabresa</h6>
-      <p>Ingredientes: Massa artesanal, molho de tomate, mozzarela, calabresa, cebola roxa e orégano.<br>
-        <strong>Valor: R$50,00</strong></p>
-        <button>Adicionar ao carrinho</button>
-    </div>
-    <div class="pizzas">
-      <h6>Pizza de Calabresa</h6>
-      <p>Ingredientes: Massa artesanal, molho de tomate, mozzarela, calabresa, cebola roxa e orégano.<br>
-        <strong>Valor: R$50,00</strong></p>
-        <button>Adicionar ao carrinho</button>
-    </div>
-    
-    <div class="pizzas">
-      <h6>Pizza de Calabresa</h6>
-      <p>Ingredientes: Massa artesanal, molho de tomate, mozzarela, calabresa, cebola roxa e orégano.<br>
-        <strong>Valor: R$50,00</strong></p>
-        <button>Adicionar ao carrinho</button>
-    </div>
-    
-    <div class="pizzas">
-      <h6>Pizza de Calabresa</h6>
-      <p>Ingredientes: Massa artesanal, molho de tomate, mozzarela, calabresa, cebola roxa e orégano.<br>
-        <strong>Valor: R$50,00</strong></p>
-        <button>Adicionar ao carrinho</button>
-    </div>
-    <div class="pizzas">
-      <h6>Pizza de Calabresa</h6>
-      <p>Ingredientes: Massa artesanal, molho de tomate, mozzarela, calabresa, cebola roxa e orégano.<br>
-        <strong>Valor: R$50,00</strong></p>
-        <button>Adicionar ao carrinho</button>
-    </div>
-    
-    <div class="pizzas">
-      <h6>Pizza de Calabresa</h6>
-      <p>Ingredientes: Massa artesanal, molho de tomate, mozzarela, calabresa, cebola roxa e orégano.<br>
-        <strong>Valor: R$50,00</strong></p>
-        <button>Adicionar ao carrinho</button>
-    </div>
-    
-    <div class="pizzas">
-      <h6>Pizza de Calabresa</h6>
-      <p>Ingredientes: Massa artesanal, molho de tomate, mozzarela, calabresa, cebola roxa e orégano.<br>
-        <strong>Valor: R$50,00</strong></p>
-        <button>Adicionar ao carrinho</button>
-    </div>
-    
-  </div>
-  <h4 id="sobremesas">Sobremesas</h4>
+<form action="/menu" method="post">
   <div id="menu_conatainer">
     <div class="menu_products">
-      <div class="sobremesas">
-        <h6>Chocolate</h6>
-        <p>Chocolate belga 40% cacau<br>
+      <div class="pizzas">
+        <h6>Pizza de Calabresa</h6>
+        <p>Ingredientes: Massa artesanal, molho de tomate, mozzarela, calabresa, cebola roxa e orégano.<br>
+          <strong>Valor: R$50,00</strong></p>
+          <button id="pizza" onclick="addCarrinho()">Adicionar ao carrinho</button>
+      </div>
+      
+      <div class="pizzas">
+        <h6>Pizza de Calabresa</h6>
+        <p>Ingredientes: Massa artesanal, molho de tomate, mozzarela, calabresa, cebola roxa e orégano.<br>
+          <strong>Valor: R$50,00</strong></p>
+          <button id="pizza" onclick="addCarrinho()">Adicionar ao carrinho</button>
+      </div>
+      
+      <div class="pizzas">
+        <h6>Pizza de Calabresa</h6>
+        <p>Ingredientes: Massa artesanal, molho de tomate, mozzarela, calabresa, cebola roxa e orégano.<br>
           <strong>Valor: R$50,00</strong></p>
           <button>Adicionar ao carrinho</button>
       </div>
-      <div class="sobremesas">
-        <h6>Chocolate</h6>
-        <p>Chocolate belga 40% cacau<br>
+      <div class="pizzas">
+        <h6>Pizza de Calabresa</h6>
+        <p>Ingredientes: Massa artesanal, molho de tomate, mozzarela, calabresa, cebola roxa e orégano.<br>
           <strong>Valor: R$50,00</strong></p>
           <button>Adicionar ao carrinho</button>
       </div>
-      <div class="sobremesas">
-        <h6>Chocolate</h6>
-        <p>Chocolate belga 40% cacau<br>
+      
+      <div class="pizzas">
+        <h6>Pizza de Calabresa</h6>
+        <p>Ingredientes: Massa artesanal, molho de tomate, mozzarela, calabresa, cebola roxa e orégano.<br>
           <strong>Valor: R$50,00</strong></p>
           <button>Adicionar ao carrinho</button>
       </div>
-      <div class="sobremesas">
-        <h6>Chocolate</h6>
-        <p>Chocolate belga 40% cacau<br>
+      
+      <div class="pizzas">
+        <h6>Pizza de Calabresa</h6>
+        <p>Ingredientes: Massa artesanal, molho de tomate, mozzarela, calabresa, cebola roxa e orégano.<br>
           <strong>Valor: R$50,00</strong></p>
           <button>Adicionar ao carrinho</button>
       </div>
-</div>
+      <div class="pizzas">
+        <h6>Pizza de Calabresa</h6>
+        <p>Ingredientes: Massa artesanal, molho de tomate, mozzarela, calabresa, cebola roxa e orégano.<br>
+          <strong>Valor: R$50,00</strong></p>
+          <button>Adicionar ao carrinho</button>
+      </div>
+      
+      <div class="pizzas">
+        <h6>Pizza de Calabresa</h6>
+        <p>Ingredientes: Massa artesanal, molho de tomate, mozzarela, calabresa, cebola roxa e orégano.<br>
+          <strong>Valor: R$50,00</strong></p>
+          <button>Adicionar ao carrinho</button>
+      </div>
+      
+      <div class="pizzas">
+        <h6>Pizza de Calabresa</h6>
+        <p>Ingredientes: Massa artesanal, molho de tomate, mozzarela, calabresa, cebola roxa e orégano.<br>
+          <strong>Valor: R$50,00</strong></p>
+          <button>Adicionar ao carrinho</button>
+      </div>
+      
+    </div>
+    <h4 id="sobremesas">Sobremesas</h4>
+    <div id="menu_conatainer">
+      <div class="menu_products">
+        <div class="sobremesas">
+          <h6>Chocolate</h6>
+          <p>Chocolate belga 40% cacau<br>
+            <strong>Valor: R$50,00</strong></p>
+            <button>Adicionar ao carrinho</button>
+        </div>
+        <div class="sobremesas">
+          <h6>Chocolate</h6>
+          <p>Chocolate belga 40% cacau<br>
+            <strong>Valor: R$50,00</strong></p>
+            <button>Adicionar ao carrinho</button>
+        </div>
+        <div class="sobremesas">
+          <h6>Chocolate</h6>
+          <p>Chocolate belga 40% cacau<br>
+            <strong>Valor: R$50,00</strong></p>
+            <button>Adicionar ao carrinho</button>
+        </div>
+        <div class="sobremesas">
+          <h6>Chocolate</h6>
+          <p>Chocolate belga 40% cacau<br>
+            <strong>Valor: R$50,00</strong></p>
+            <button>Adicionar ao carrinho</button>
+        </div>
   </div>
-  <h4 id="bebidas">Bebidas</h4>
-  <div id="menu_conatainer">
-    <div class="menu_products">
-      <div class="bebidas">
-        <h6>Refrigerante</h6>
-        <p><strong>Valor: R$50,00</strong></p>
-          <button>Adicionar ao carrinho</button>
-      </div>
-      <div class="bebidas">
-        <h6>Refrigerante</h6>
-        <p><strong>Valor: R$50,00</strong></p>
-          <button>Adicionar ao carrinho</button>
-      </div>
-      <div class="bebidas">
-        <h6>Refrigerante</h6>
-        <p><strong>Valor: R$50,00</strong></p>
-          <button>Adicionar ao carrinho</button>
-      </div>
-      <div class="bebidas">
-        <h6>Refrigerante</h6>
-        <p><strong>Valor: R$50,00</strong></p>
-          <button>Adicionar ao carrinho</button>
-      </div>
-      <div class="bebidas">
-        <h6>Refrigerante</h6>
-        <p><strong>Valor: R$50,00</strong></p>
-          <button>Adicionar ao carrinho</button>
-      </div>
-    </div>  
-
-
-
+    </div>
+    <h4 id="bebidas">Bebidas</h4>
+    <div id="menu_conatainer">
+      <div class="menu_products">
+        <div class="bebidas">
+          <h6>Refrigerante</h6>
+          <p><strong>Valor: R$50,00</strong></p>
+            <button>Adicionar ao carrinho</button>
+        </div>
+        <div class="bebidas">
+          <h6>Refrigerante</h6>
+          <p><strong>Valor: R$50,00</strong></p>
+            <button>Adicionar ao carrinho</button>
+        </div>
+        <div class="bebidas">
+          <h6>Refrigerante</h6>
+          <p><strong>Valor: R$50,00</strong></p>
+            <button>Adicionar ao carrinho</button>
+        </div>
+        <div class="bebidas">
+          <h6>Refrigerante</h6>
+          <p><strong>Valor: R$50,00</strong></p>
+            <button>Adicionar ao carrinho</button>
+        </div>
+        <div class="bebidas">
+          <h6>Refrigerante</h6>
+          <p><strong>Valor: R$50,00</strong></p>
+            <button>Adicionar ao carrinho</button>
+        </div>
+    </div>
+</form>
 {% endblock %}
+<script type=text/javascript>
+  const isLogIn = {{ isLoggedIn | tojson }}
+  
+  function addCarrinho() {
+      let buttonPizza = document.getElementById('pizza');
+      console.log("Valor de isLogin: ", isLogIn)
+      if (!isLogIn) {
+          window.alert("Você precisa estar logado para continuar");
+      } 
+  }
+</script>
