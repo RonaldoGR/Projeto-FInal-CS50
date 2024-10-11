@@ -131,9 +131,8 @@
         </div>
     </div>
 </form>
-{% endblock %}
 <script type=text/javascript>
-  const isLogIn = {{ isLoggedIn | tojson }}
+  const isLogIn = {{ isLoggedIn | tojson | safe }}
   
   function addCarrinho() {
       let buttonPizza = document.getElementById('pizza');
@@ -143,3 +142,5 @@
       } 
   }
 </script>
+{% endblock %}
+

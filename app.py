@@ -99,6 +99,13 @@ def login_required(f):
     return decorated_function
 
 
+# Torna a variável isLoggedIn global para todas as rotas mesmo que não precise utilizá-la em algumas rotas
+@app.context_processor
+def inject_logged_in_status():
+   isLoggedIn = "user_id" in session
+   return dict(isLoggedIn = isLoggedIn)
+
+
 @app.route('/')
 def index():
   return render_template("index.html")
@@ -108,7 +115,7 @@ def index():
 @app.route("/login", methods=["GET", "POST"])
 def login():
    session.clear()
-
+   isLoggedIn = "user_id" in session
    if request.method == "POST":
       
       con = sqlite3.connect("database.db") 
@@ -134,7 +141,8 @@ def login():
 
       return redirect("/")
    
-   return render_template("login.html")
+   return render_template("login.html", isLoggedIn = isLoggedIn)
+
 
 @app.route('/logout')
 @login_required
@@ -146,6 +154,7 @@ def logout():
 
 @app.route('/register', methods=['GET','POST'])
 def register():
+   isLoggedIn = "user_id" in session
    if request.method == "POST":
       
       con = sqlite3.connect("database.db")
@@ -202,6 +211,7 @@ def register():
          return "An error occurred, 500"
       
    return render_template("register.html")
+
 
 
 @app.route("/menu", methods=["GET", "POST"])
