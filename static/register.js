@@ -29,23 +29,37 @@ document.addEventListener("DOMContentLoaded", function (){
           return
       } 
 
-      console.log(JSON.stringify({ name: name, email: email }))
+     
   
+      try { 
+        let response = await fetch('/register', {
+            method:'POST',
+            headers: {'Content-type': 'application/json'},
+            body: JSON.stringify({ name: name, email: email, password: password, location: location, birthday: birthday })
+        })
 
-      let response = await fetch('/register', {
-          method:'POST',
-          headers: {'Content-type': 'application/json'},
-          body: JSON.stringify({ name: name, email: email })
-      })
-
-      let result = await response.json()
-      
-      if (result.exists === "username") {
-          window.alert("Username already exists!")
-      } else if (result.exists === "email") {
-          window.alert("Email already exists!")
-          return false
+        if (response.ok || response.status === 400) {
+        
+            let result = await response.json()
+            console.log(result.status)
+            
+            if (result.exists === "username") {
+                window.alert("Username already exists!")
+            } else if (result.exists === "email") {
+                window.alert("Email already exists!")
+                return false
+            } else {
+                window.alert("User register sucescefull")
+                window.location.href = result.redirect
+             } 
+            } else {
+                 window.alert("Error. Try again.")
+            }
+      } catch (error) {
+        console.log("Error:", error)
       }
+     
+
 return true
 }
 

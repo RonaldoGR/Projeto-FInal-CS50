@@ -42,8 +42,8 @@ def create_table():
     con.commit()
     con.close()
 
-data = datetime.now()
-year = data.year
+date = datetime.now()
+year = date.year
 
 
 def create_orders_table():
@@ -154,145 +154,84 @@ def logout():
 
 
 
-# @app.route('/register', methods=['GET','POST'])
-# def register():
+@app.route('/register', methods=['GET','POST'])
+def register():
   
-#    con = sqlite3.connect("database.db")
-#    cur = con.cursor()
+   con = sqlite3.connect("database.db")
+   cur = con.cursor()
 
-#    #Verificação se usuário e e-mail já estão cadastrados
-#    if request.method == "POST":
-#       if request.is_json:
-#          data = request.get_json()
+   #Verificação se usuário e e-mail já estão cadastrados
+   if request.method == "POST":
+      if request.is_json:
+         json_data = request.get_json()
+         print(json_data)
 
-#          username = data.get("name")
-#          email = data.get("email")
-      
+         username = json_data.get("name")
+         email = json_data.get("email")
+         password = json_data.get("password") 
+         birthday = json_data.get("birthday")
+         location = json_data.get("location")
+
+         print("Username:", username)
+         print("Email:", email)
+         print("Password:", password)
+         print("Birthday:", birthday)
+         print("Location:", location)
+    
+
         
+         if not username or not email or not password or not birthday or not location:
+           return jsonify({"error": "Must provide all the fields"}), 400
          
       
-#          user = cur.execute("SELECT * FROM users WHERE name = ?",(username,)).fetchone()
-#          emailUser = cur.execute("SELECT * FROM users WHERE email = ?",(email,)).fetchone()
+         user = cur.execute("SELECT * FROM users WHERE name = ?",(username,)).fetchone()
+         
+         emailUser = cur.execute("SELECT * FROM users WHERE email = ?",(email,)).fetchone()
+        
 
-#          if user:
-#             return jsonify({"exists": "username"}), 400
-#          if emailUser:
-#             return jsonify({"exists": "email"}), 400
+         if user:
+            return jsonify({"exists": "username"}), 400
+         if emailUser:
+            return jsonify({"exists": "email"}), 400
    
          
-    
-#          return jsonify({ "exists": None }), 200
 
-#    if request.method == "POST":
-#       if request.form:
-         
-#          username = request.form.get("name")
-#          email = request.form.get("email")
-#          location = request.form.get("location")
-#          birthday = request.form.get("birthday")
-#          password = request.form.get("password")
-
-      
-#          # user = cur.execute("SELECT * FROM users WHERE name = ?",(username,)).fetchone()
-#          # if user:
-#          #    return "400 username exists"
-         
-         
-         
-#          # emailUser = cur.execute("SELECT * FROM users WHERE email = ?",(email,)).fetchone()
-#          # if emailUser:
-#          #    return "400 email exists"
          
       
-#          hash_password = generate_password_hash(
-#                password, method='scrypt', salt_length=16)
+         hash_password = generate_password_hash(
+               password, method='scrypt', salt_length=16)
          
          
-#          if not birthday:
-#             birthday_date = None
-#             birthday_year = None
-#             age = 0
-#             return redirect("/register")
-                  
-#          birthday_date = datetime.strptime(birthday, "%Y-%m-%d")
-#          birthday_year = birthday_date.year
-#          age = year - birthday_year
-#          if (data.month, data.day) < (birthday_date.month, birthday_date.day):
-#             age -= 1
-
-#          try:
-#             cur.execute("""
-#                         INSERT INTO users(name, age, hash, email, location)
-#                         VALUES(?, ?, ?, ?, ?)
-#                         """, (username, age, hash_password, email, location))
-#             con.commit()
-#             new_user = cur.execute("SELECT id FROM users WHERE name = ?", (username,)).fetchone()
-#             session["user_id"] = new_user[0]
-            
-#             con.close() 
-#             return render_template("login.html")
-#          except Exception as e:
-#             print(f"ERROR: {e}")
-#             return "An error occurred, 500"
-         
-#    return render_template("register.html")
-
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    con = sqlite3.connect("database.db")
-    cur = con.cursor()
-
-    if request.method == "POST":
-        username = request.form.get("name")
-        email = request.form.get("email")
-        location = request.form.get("location")
-        birthday = request.form.get("birthday")
-        password = request.form.get("password")
-
-        # Verificar se o usuário ou e-mail já estão cadastrados
-        user = cur.execute("SELECT * FROM users WHERE name = ?", (username,)).fetchone()
-        emailUser = cur.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
-
-        if user:
-            return jsonify({"exists": "username"}), 400
-        if emailUser:
-            return jsonify({"exists": "email"}), 400
-
-        # Calcular a idade
-        if birthday:
+         if not birthday:
+            birthday_date = None
+            birthday_year = None
+            age = 0
+            return redirect("/register")
+         try:            
             birthday_date = datetime.strptime(birthday, "%Y-%m-%d")
-            current_date = datetime.now()
-            age = current_date.year - birthday_date.year
-            if (current_date.month, current_date.day) < (birthday_date.month, birthday_date.day):
+            birthday_year = birthday_date.year
+            age = year - birthday_year
+            if (date.month, date.day) < (birthday_date.month, birthday_date.day):
                 age -= 1
-        else:
-            age = 0  # Defina um valor padrão se necessário
-
-        # Gerar hash da senha
-        hash_password = generate_password_hash(password, method='scrypt', salt_length=16)
-
-        try:
-            # Inserir novo usuário no banco de dados
+            print(username, age, hash_password, email, location)
+            
+            print("Inserting user into database")
             cur.execute("""
-                INSERT INTO users(name, age, hash, email, location)
-                VALUES(?, ?, ?, ?, ?)
-            """, (username, age, hash_password, email, location))
+                        INSERT INTO users(name, age, hash, email, location)
+                        VALUES(?, ?, ?, ?, ?)
+                        """, (username, age, hash_password, email, location))
             con.commit()
-
-            # Recuperar o id do novo usuário e iniciar sessão
             new_user = cur.execute("SELECT id FROM users WHERE name = ?", (username,)).fetchone()
             session["user_id"] = new_user[0]
-
-            con.close()
-            return render_template("login.html"), 200
-
-        except Exception as e:
-            con.rollback()
+            
+            con.close() 
+            return jsonify({"redirect": "/login"}), 200
+         except Exception as e:
             print(f"ERROR: {e}")
-            return "An error occurred, 500"
+            return jsonify({"error": "An error occurred" }), 500
+         
+   return render_template("register.html")
 
-    return render_template("register.html")
 
 
 
