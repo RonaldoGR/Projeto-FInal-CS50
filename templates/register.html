@@ -5,60 +5,61 @@
 {% endblock %}  
 
 {% block main %}
-
-<form action="/register" method="post" class="px-4 py-3">
-    <div id="border">
-
-        <div class="d-flex flex-row mb-3">
-  
-            <div class="p-2">
-                <label   for="exampleDropdownFormUserName" class="form-label">Username</label>
-                <input name="name" autocomplete="off" autofocus class="form-control mx-auto w-auto" name="username" placeholder="Username" type="text">
-            </div>
-           
-            <div class="p-2">
-                <label  for="exampleDropdownFormEmail1" class="form-label">Email address</label>
-                <input name="email" autocomplete="off" autofocus class="form-control mx-auto w-auto" name="email" placeholder="Email" type="email">
-            </div>
-            <div class="p-2">
-                <label for="dataNascimento" class="form-label">Data de Nascimento</label>
-                <input name="birthday" type="date" class="form-control" id="dataNascimento" name="dataNascimento">
-            </div>
-            </div> 
-            <div class="d-flex flex-row mb-3">
-            <div class="p-2">
-                <label for="exampleDropdownFormPassword" class="form-label">Password</label>
-              <input name="password" class="form-control mx-auto w-auto" name="password" placeholder="Password" type="password">
-          </div>
-          <div class="p-2">
-            <label for="exampleDropdownFormConfirmPassword" class="form-label">Confirm password</label>
-              <input name="confirm" class="form-control mx-auto w-auto" name="confirmation" placeholder="Password (confirm)" type="password">
-          </div>
-          <div class="p-2">
-            <label  for="exampleDropdownFormLocation" class="form-label">Location</label>
-            <input name="location" autocomplete="off" autofocus class="form-control mx-auto w-auto" name="location" placeholder="Location" type="text">
-        </div>
-         
-        </div>
-           <button id="register" class="btn btn-primary" type="submit" onclick=teste() >Register</button>
-        </form>
-
-    </div>
-  
 <div id="pizza1">
     <img id="imagepizza1"  src="../static/images/pizzaprincipal2.png" alt="pizza" srcset="" style="width: 30%; max-width: auto ; height: auto;">
 </div>
 
-
-<img id="imagepizza2" src="/static/images/pizzaprincipal4.png" alt="pizza 2" srcset="" style="width: 50%; max-width: auto ; height: auto;">
-<script>
-    function teste() {
-        name = document.getElementsById('name')
-        if (name.length === 0) {
-        alert("Must provide name")
+<form action="/register" method="post" class="px-4 py-3">
     
-        }
-   }
-</script>
+    <div id="border">
+
+        <div id="containerRegister" class="d-flex flex-row mb-3">
+  
+            <div class="p-2">
+                <label for="username"  class="form-label">Username</label>
+                    <input id="username" name="name" autocomplete="off" autofocus class="form-control mx-auto w-auto" placeholder="Username" type="text">
+            </div>
+           
+            <div class="p-2">
+                <label for="email"  class="form-label">Email address</label>
+                <input id="email" autocomplete="off" autofocus class="form-control mx-auto w-auto" name="email" placeholder="Email" type="email">
+            </div>
+
+            <div class="p-2">
+                <label for="birthday" class="form-label">Data de Nascimento</label>
+                <input id="birthday" type="date" class="form-control" id="dataNascimento" name="dataNascimento">
+            </div>
+        </div>
+             
+          <div id="containerRegister" class="d-flex flex-row mb-3">        
+                <div class="p-2">
+                        <label for="password" class="form-label">Password</label>
+                    <input id="password" class="form-control mx-auto w-auto" name="password" placeholder="Password" type="password">
+                </div>
+
+                <div class="p-2">
+                    <label for="confirmation" class="form-label">Confirm password</label>
+                    <input id="confirmation" class="form-control mx-auto w-auto" name="confirmation" placeholder="Password (confirm)" type="password">
+                </div>
+
+               <div class="p-2">
+                    <label for="location"  class="form-label">Location</label>
+                    <input id="location" autocomplete="off" autofocus class="form-control mx-auto w-auto" name="location" placeholder="Location" type="text">
+               </div>
+               <button id="register" class="btn btn-primary" type="submit" onclick="register()" >Register</button>
+          </div>
+    </div>
+        </div>
+          
+        </form>
+
+
+  
+
+
+<div id="pizza2">
+    <img id="imagepizza2" src="/static/images/pizzaprincipal4.png" alt="pizza 2" srcset="" style="width: 50%; max-width: auto ; height: auto;">
+</div>
+<script src="/static/register.js"></script>
 
 {% endblock %}

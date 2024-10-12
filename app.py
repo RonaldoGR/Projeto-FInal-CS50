@@ -1,9 +1,10 @@
-from flask import Flask, flash, redirect, render_template, request, session, url_for, json
+from flask import Flask, flash, redirect, render_template, request, session, url_for,json, jsonify
 from flask_session import Session
 from functools import wraps
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
 import sqlite3
+import json
 
 
 app = Flask(__name__,static_url_path='/static')
@@ -103,6 +104,7 @@ def login_required(f):
 @app.context_processor
 def inject_logged_in_status():
    isLoggedIn = "user_id" in session
+  
    return dict(isLoggedIn = isLoggedIn)
 
 
@@ -115,7 +117,7 @@ def index():
 @app.route("/login", methods=["GET", "POST"])
 def login():
    session.clear()
-   isLoggedIn = "user_id" in session
+
    if request.method == "POST":
       
       con = sqlite3.connect("database.db") 
@@ -141,7 +143,7 @@ def login():
 
       return redirect("/")
    
-   return render_template("login.html", isLoggedIn = isLoggedIn)
+   return render_template("login.html")
 
 
 @app.route('/logout')
@@ -152,65 +154,147 @@ def logout():
 
 
 
-@app.route('/register', methods=['GET','POST'])
-def register():
-   isLoggedIn = "user_id" in session
-   if request.method == "POST":
-      
-      con = sqlite3.connect("database.db")
-      cur = con.cursor()
+# @app.route('/register', methods=['GET','POST'])
+# def register():
+  
+#    con = sqlite3.connect("database.db")
+#    cur = con.cursor()
 
-      name = request.form.get("name")
-      if not name:
-         return "400 must provide username"
-      user = cur.execute("SELECT * FROM users WHERE name = ?",(name,)).fetchone()
-      if user:
-         return "400 username exists"
-      
-      email = request.form.get("email")
-      if not email:
-         return "400 must provide email"
-      emailUser = cur.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
-      if emailUser:
-         return "400 email exists"
-      
-      password = request.form.get("password")
-      confirm = request.form.get("confirm")
-      if not password or password != confirm:
-         return "400 must provide password/ password is not confirmed"
-    
-      hash_password = generate_password_hash(
-            password, method='scrypt', salt_length=16)
-      
-      location = request.form.get("location")
-      if not location:
-         return "400 must provide location"
-      
-      birthday = request.form.get("birthday")
-      if not birthday:
-         return "400 must provide birthday date"
-      birthday_date = datetime.strptime(birthday, "%Y-%m-%d")
-      birthday_year = birthday_date.year
-      age = year - birthday_year
-      if (data.month, data.day) < (birthday_date.month, birthday_date.day):
-         age -= 1
+#    #Verificação se usuário e e-mail já estão cadastrados
+#    if request.method == "POST":
+#       if request.is_json:
+#          data = request.get_json()
 
-      try:
-         cur.execute("""
-                     INSERT INTO users(name, age, hash, email, location)
-                     VALUES(?, ?, ?, ?, ?)
-                     """, (name, age, hash_password, email, location))
-         con.commit()
-         new_user = cur.execute("SELECT id FROM users WHERE name = ?", (name,)).fetchone()
-         session["user_id"] = new_user[0]
+#          username = data.get("name")
+#          email = data.get("email")
+      
+        
          
-         con.close() 
-         return redirect("/login")
-      except Exception as e:
-         print(f"ERROR: {e}")
-         return "An error occurred, 500"
       
-   return render_template("register.html")
+#          user = cur.execute("SELECT * FROM users WHERE name = ?",(username,)).fetchone()
+#          emailUser = cur.execute("SELECT * FROM users WHERE email = ?",(email,)).fetchone()
+
+#          if user:
+#             return jsonify({"exists": "username"}), 400
+#          if emailUser:
+#             return jsonify({"exists": "email"}), 400
+   
+         
+    
+#          return jsonify({ "exists": None }), 200
+
+#    if request.method == "POST":
+#       if request.form:
+         
+#          username = request.form.get("name")
+#          email = request.form.get("email")
+#          location = request.form.get("location")
+#          birthday = request.form.get("birthday")
+#          password = request.form.get("password")
+
+      
+#          # user = cur.execute("SELECT * FROM users WHERE name = ?",(username,)).fetchone()
+#          # if user:
+#          #    return "400 username exists"
+         
+         
+         
+#          # emailUser = cur.execute("SELECT * FROM users WHERE email = ?",(email,)).fetchone()
+#          # if emailUser:
+#          #    return "400 email exists"
+         
+      
+#          hash_password = generate_password_hash(
+#                password, method='scrypt', salt_length=16)
+         
+         
+#          if not birthday:
+#             birthday_date = None
+#             birthday_year = None
+#             age = 0
+#             return redirect("/register")
+                  
+#          birthday_date = datetime.strptime(birthday, "%Y-%m-%d")
+#          birthday_year = birthday_date.year
+#          age = year - birthday_year
+#          if (data.month, data.day) < (birthday_date.month, birthday_date.day):
+#             age -= 1
+
+#          try:
+#             cur.execute("""
+#                         INSERT INTO users(name, age, hash, email, location)
+#                         VALUES(?, ?, ?, ?, ?)
+#                         """, (username, age, hash_password, email, location))
+#             con.commit()
+#             new_user = cur.execute("SELECT id FROM users WHERE name = ?", (username,)).fetchone()
+#             session["user_id"] = new_user[0]
+            
+#             con.close() 
+#             return render_template("login.html")
+#          except Exception as e:
+#             print(f"ERROR: {e}")
+#             return "An error occurred, 500"
+         
+#    return render_template("register.html")
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    con = sqlite3.connect("database.db")
+    cur = con.cursor()
+
+    if request.method == "POST":
+        username = request.form.get("name")
+        email = request.form.get("email")
+        location = request.form.get("location")
+        birthday = request.form.get("birthday")
+        password = request.form.get("password")
+
+        # Verificar se o usuário ou e-mail já estão cadastrados
+        user = cur.execute("SELECT * FROM users WHERE name = ?", (username,)).fetchone()
+        emailUser = cur.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
+
+        if user:
+            return jsonify({"exists": "username"}), 400
+        if emailUser:
+            return jsonify({"exists": "email"}), 400
+
+        # Calcular a idade
+        if birthday:
+            birthday_date = datetime.strptime(birthday, "%Y-%m-%d")
+            current_date = datetime.now()
+            age = current_date.year - birthday_date.year
+            if (current_date.month, current_date.day) < (birthday_date.month, birthday_date.day):
+                age -= 1
+        else:
+            age = 0  # Defina um valor padrão se necessário
+
+        # Gerar hash da senha
+        hash_password = generate_password_hash(password, method='scrypt', salt_length=16)
+
+        try:
+            # Inserir novo usuário no banco de dados
+            cur.execute("""
+                INSERT INTO users(name, age, hash, email, location)
+                VALUES(?, ?, ?, ?, ?)
+            """, (username, age, hash_password, email, location))
+            con.commit()
+
+            # Recuperar o id do novo usuário e iniciar sessão
+            new_user = cur.execute("SELECT id FROM users WHERE name = ?", (username,)).fetchone()
+            session["user_id"] = new_user[0]
+
+            con.close()
+            return render_template("login.html"), 200
+
+        except Exception as e:
+            con.rollback()
+            print(f"ERROR: {e}")
+            return "An error occurred, 500"
+
+    return render_template("register.html")
+
+
 
 
 
