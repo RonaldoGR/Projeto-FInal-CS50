@@ -36,8 +36,8 @@ def create_table():
     hash TEXT NOT NULL,
     cash NUMERIC NOT NULL DEFAULT 500.00,
     email TEXT NOT NULL,
-    location TEXT
-    )
+    full_adress TEXT
+     )            
     """)
     con.commit()
     con.close()
@@ -165,22 +165,35 @@ def register():
       if request.is_json:
          json_data = request.get_json()
          print(json_data)
+         full_adress = json.loads(json_data.get('full_adress'))
+    
+         # full_adress = {
+         #    "country": json_data.get('country'),
+         #    "state": json_data.get('state'),
+         #    "city": json_data.get('city'),
+         #    "street": json_data.get('street'),
+         #    "number": json_data.get('num')
+         # }
+
+         # full_adress_json = json.dumps(full_adress)
+        
+         
 
          username = json_data.get("name")
          email = json_data.get("email")
          password = json_data.get("password") 
          birthday = json_data.get("birthday")
-         location = json_data.get("location")
+         
 
          print("Username:", username)
          print("Email:", email)
          print("Password:", password)
          print("Birthday:", birthday)
-         print("Location:", location)
+         print("Full Adress: ", full_adress)
     
 
         
-         if not username or not email or not password or not birthday or not location:
+         if not username or not email or not password or not birthday or not full_adress:
            return jsonify({"error": "Must provide all the fields"}), 400
          
       
@@ -213,13 +226,13 @@ def register():
             age = year - birthday_year
             if (date.month, date.day) < (birthday_date.month, birthday_date.day):
                 age -= 1
-            print(username, age, hash_password, email, location)
+            print(username, age, hash_password, email, full_adress)
             
             print("Inserting user into database")
             cur.execute("""
-                        INSERT INTO users(name, age, hash, email, location)
+                        INSERT INTO users(name, age, hash, email, full_adress)
                         VALUES(?, ?, ?, ?, ?)
-                        """, (username, age, hash_password, email, location))
+                        """, (username, age, hash_password, email, json.dumps(full_adress)))
             con.commit()
             new_user = cur.execute("SELECT id FROM users WHERE name = ?", (username,)).fetchone()
             session["user_id"] = new_user[0]
