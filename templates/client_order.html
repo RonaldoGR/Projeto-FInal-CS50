@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Client order
+
+{% endblock %}
+
+{% block main %}
+<h1>Teste...</h1>
+<table>
+  {% set index = 0 %}
+  {% for item in order %}
+    <tr data-index="{{ index }}">
+      <td class="text-end"> {{ item.name }}   {{ item.price }}   <button type="button"  onclick="remover(this)">Remover</button></td><br>    
+    </tr>  
+    {% set index = index + 1 %}
+  {% endfor %}
+</table>
+    
+    <td>TOTAL: {{ total }}</td><br>
+    <button>Finalizar pedido</button>
+  
+
+
+
+<script>
+  function remover(button) {
+    console.log("chamando a função")
+   
+    let row = button.closest('tr')
+    let index = row.getAttribute('data-index')
+  
+    if (row) {
+        itemName = row.querySelector('td').innerText.split(' ')[0]
+        row.remove()
+        fetch(`/client_order?remove_index=${index}`, {
+          method: 'POST'
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.sucess) {
+         
+          window.location.reload()
+          console.log("Item removido com sucesso")
+        }
+      })
+      .catch(error => {
+        console.log("Erro ao remover item", error)
+      })
+    }        
+  }
+
+</script>
+{% endblock %}

@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", function (){
 
       let full_adress_json = JSON.stringify(full_adress)
       console.log("Full Adress: ", full_adress)
+      
       if (!name || !email || !birthday || !password || password !== confirmation || !country || !state || !city || !street || !num) {
         window.alert("Please fill out all fields correctlyt!")
         return

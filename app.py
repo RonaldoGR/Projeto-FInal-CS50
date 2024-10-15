@@ -66,28 +66,6 @@ def create_orders_table():
 
    
 
-# def teste():
-#     print("Criando usuário de teste")
-#     con = sqlite3.connect("database.db")
-#     cur = con.cursor()
-#     cur.execute("""
-#         INSERT INTO users (id,name,age,hash,email, location)
-#         VALUES(?,?,?,?,?,?)
-#         """, (1, "Ronaldo",30,1234,"rgr@email.com", "Pelotas-RS"))
-#     print("Criado pedidos de teste")
-
-      
-
-#     userId = cur.execute("SELECT id FROM users WHERE name = ?", ("Ronaldo",)).fetchone()[0]
-
-#     cur.execute("""
-#         INSERT INTO orders(user_id,item,quantity,value,total_order,time_order)
-#         VALUES(?,?,?,?,?,?)
-#         """, (userId,"Pizza de Calabresa", 2,30,60,data))
-
-#     con.commit()
-#     con.close()
-
 
 def login_required(f):
 
@@ -166,18 +144,7 @@ def register():
          json_data = request.get_json()
          print(json_data)
          full_adress = json.loads(json_data.get('full_adress'))
-    
-         # full_adress = {
-         #    "country": json_data.get('country'),
-         #    "state": json_data.get('state'),
-         #    "city": json_data.get('city'),
-         #    "street": json_data.get('street'),
-         #    "number": json_data.get('num')
-         # }
-
-         # full_adress_json = json.dumps(full_adress)
         
-         
 
          username = json_data.get("name")
          email = json_data.get("email")
@@ -258,6 +225,31 @@ def menu():
        return render_template("menu.html", isLoggedIn = isLoggedIn)
    return render_template("menu.html", isLoggedIn = isLoggedIn)
 
+
+@app.route("/client_order", methods=["GET", "POST"])
+@login_required
+def client_order():
+   con = sqlite3.connect("database.db")
+   cur = con.cursor()
+
+
+   remove_index = request.args.get('remove_index', type=int)
+   if remove_index is not None:
+      order = session.get('order', [])
+      if 0 <= remove_index < len(order):
+         print("Removendo item na posição: ", remove_index)
+         del order[remove_index]
+         session['order'] = order
+         session.modified = True
+         return jsonify({ 'sucess': True})
+    
+   
+   order = session.get('order', [])
+
+   total = sum(item['price'] for item in order if 'price' in item)
+   return render_template("client_order.html", order=order, total = total)
+   
+ 
 
 
 

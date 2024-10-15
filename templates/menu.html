@@ -14,7 +14,7 @@
         <h6>Pizza de Calabresa</h6>
         <p>Ingredientes: Massa artesanal, molho de tomate, mozzarela, calabresa, cebola roxa e orégano.<br>
           <strong>Valor: R$50,00</strong></p>
-          <button id="pizza" onclick="addCarrinho(event)">Adicionar ao carrinho</button>
+          <button id="calabresa" onclick="addCarrinho(event)">Adicionar ao carrinho</button>
       </div>
       
       <div class="pizzas">
@@ -134,31 +134,69 @@
 </form>
  
 <script type=text/javascript>
+
+    
+
+ function ver_pedido() {
+  console.log("Função ver pedido()")
+  const order = localStorage.getItem('order')
+  window.location.href = `/client_order?order=${encodeURIComponent(order)}`
+ 
+ }
+
+
+
+
   const isLogIn = {{ isLoggedIn | tojson | safe }}
   let total = 0
   function addCarrinho(event) {
       event.preventDefault()
     
       let pedido = document.getElementById('order')
-      console.log("Pedido element:", pedido)
-      let pizza = 50
-      let dessert = 20
-      let drink = 10
+    
+      let  itemName, itemPrice;
+
+
+
       
       if (!isLogIn) {
           window.alert("Você precisa estar logado para continuar")
       } else {
         window.alert("Adcionado item com sucesso!")
         if (event.target.id === 'drinks'){
-          total += drink
+          itemName = 'Refrigerante'
+          itemPrice = 10
+          total += itemPrice
+          
+        }        
+        if (event.target.id === 'calabresa'){
+          itemName = 'Pizza de Calabresa'
+          itemPrice = 50
+          total += itemPrice
+          
         }        
         else if (event.target.id === 'dessert'){
-          total += dessert
+          itemName = 'Sobremesa'
+          itemPrice = 20
+          total += itemPrice
         } else {
-          total += pizza
+          itemName = 'Pizza'
+          itemPrice = 50
+          total += itemPrice
         }
         console.log("Total atualizado:", total)
-        pedido.innerHTML = `<p>Total: R${total}.00   <button>Ver pedido</button></p>`
+       
+
+        let order = JSON.parse(localStorage.getItem('order')) || []
+        order.push({ name: itemName, price: itemPrice})
+        localStorage.setItem('order', JSON.stringify(order))
+        
+        let button = document.createElement("button")
+        button.type = "button"
+        button.innerText = "Ver pedido"
+        button.onclick = ver_pedido
+        pedido.innerHTML = `<p>Total: R${total}.00`
+        pedido.appendChild(button)  
         
       }
   }
