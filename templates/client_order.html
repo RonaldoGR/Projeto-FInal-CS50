@@ -7,13 +7,14 @@ Client order
 
 {% block main %}
 <h1>Teste...</h1>
+
 <table>
-  {% set index = 0 %}
+ 
   {% for item in order %}
-    <tr data-index="{{ index }}">
-      <td class="text-end"> {{ item.name }}   {{ item.price }}   <button type="button"  onclick="remover(this)">Remover</button></td><br>    
+    <tr data-index="{{ loop.index0 }}">
+      <td class="text-end"> {{ item.name }}   {{ item.price }}   <button type="button"  onclick="remover(this)">Remover</button></td> 
     </tr>  
-    {% set index = index + 1 %}
+
   {% endfor %}
 </table>
     
@@ -24,30 +25,47 @@ Client order
 
 
 <script>
+
+  function atualizarIndices() {
+    let rows = document.querySelectorAll('tr[data-index]')
+    rows.forEach((rows, newIndex) => {
+      rows.setAttribute('data-index', newIndex)
+    })
+  }
+
+
+
   function remover(button) {
-    console.log("chamando a função")
-   
     let row = button.closest('tr')
-    let index = row.getAttribute('data-index')
-  
-    if (row) {
-        itemName = row.querySelector('td').innerText.split(' ')[0]
-        row.remove()
-        fetch(`/client_order?remove_index=${index}`, {
-          method: 'POST'
+    let index = parseInt(row.getAttribute('data-index'), 10)
+    console.log("Índice a ser removido:", index);
+    let order = JSON.parse(localStorage.getItem('order'))
+
+    let formData = new FormData()
+    formData.append('remove_index', index)
+
+        fetch(`/client_order`, {
+          method: 'POST',
+          body: formData
       })
       .then(response => response.json())
       .then(data => {
-        if (data.sucess) {
-         
-          window.location.reload()
-          console.log("Item removido com sucesso")
+        if (data.success) {
+         console.log("Item removido com sucesso")
+         row.remove()
+         console.log(order)
+         order.splice(index, 1) 
+         console.log(order)
+         localStorage.setItem('order', JSON.stringify(order))
+         atualizarIndices()
+        
+        //  window.location.reload()
         }
       })
       .catch(error => {
         console.log("Erro ao remover item", error)
       })
-    }        
+          
   }
 
 </script>

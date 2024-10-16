@@ -140,6 +140,7 @@
  function ver_pedido() {
   console.log("Função ver pedido()")
   const order = localStorage.getItem('order')
+  console.log("Dados do localStorage:", order)
   window.location.href = `/client_order?order=${encodeURIComponent(order)}`
  
  }
@@ -155,8 +156,6 @@
       let pedido = document.getElementById('order')
     
       let  itemName, itemPrice;
-
-
 
       
       if (!isLogIn) {

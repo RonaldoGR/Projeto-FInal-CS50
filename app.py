@@ -232,19 +232,35 @@ def client_order():
    con = sqlite3.connect("database.db")
    cur = con.cursor()
 
-
-   remove_index = request.args.get('remove_index', type=int)
-   if remove_index is not None:
-      order = session.get('order', [])
-      if 0 <= remove_index < len(order):
-         print("Removendo item na posição: ", remove_index)
-         del order[remove_index]
+   if request.method == 'POST':
+      print("Dados da requisição POST:", request.form)
+      remove_index = request.form.get('remove_index')
+      print("Índice para remoção:", remove_index)
+      if remove_index is not None:
+         remove_index = int(remove_index)
+         order = session.get('order', [])
+         print("DADOS ARMAZENADOS: ", order)
+         if 0 <= remove_index < len(order):
+            print("Removendo item na posição: ", remove_index)
+            del order[remove_index]
+            session['order'] = order
+            session.modified = True
+            return jsonify({ 'success': True})
+      
+   print(session)
+   order = request.args.get('order')
+   print("Dados recebidos no backend:", order)
+   if order:
+      try:
+         order = json.loads(order)
          session['order'] = order
          session.modified = True
-         return jsonify({ 'sucess': True})
-    
-   
-   order = session.get('order', [])
+      except json.JSONDecodeError as e:
+         print("ERRO AO DECODIFICAR JSON:", e)
+         order = []   
+   else:
+      order = session.get('order', [])   
+      print("Dados armazenados na sessão:", session.get('order'))
 
    total = sum(item['price'] for item in order if 'price' in item)
    return render_template("client_order.html", order=order, total = total)
