@@ -14,14 +14,14 @@
         <h6>Pizza de Calabresa</h6>
         <p>Ingredientes: Massa artesanal, molho de tomate, mozzarela, calabresa, cebola roxa e orégano.<br>
           <strong>Valor: R$50,00</strong></p>
-          <button id="calabresa" onclick="addCarrinho(event)">Adicionar ao carrinho</button>
+          <button id="calabresa" value="calabresa" name="calabresa" onclick="addCarrinho(event)">Adicionar ao carrinho</button>
       </div>
       
       <div class="pizzas">
         <h6>Pizza de Calabresa</h6>
         <p>Ingredientes: Massa artesanal, molho de tomate, mozzarela, calabresa, cebola roxa e orégano.<br>
           <strong>Valor: R$50,00</strong></p>
-          <button id="pizza" onclick="addCarrinho(event)">Adicionar ao carrinho</button>
+          <button id="pizza" name="margherita" value="margherita" onclick="addCarrinho(event)">Adicionar ao carrinho</button>
       </div>
       
       <div class="pizzas">
@@ -79,13 +79,13 @@
           <h6>Chocolate</h6>
           <p>Chocolate belga 40% cacau<br>
             <strong>Valor: R$50,00</strong></p>
-            <button id="dessert" onclick="addCarrinho(event)" >Adicionar ao carrinho</button>
+            <button name="brownie" value="brownie" id="dessert" onclick="addCarrinho(event)" >Adicionar ao carrinho</button>
         </div>
         <div class="sobremesas">
           <h6>Chocolate</h6>
           <p>Chocolate belga 40% cacau<br>
             <strong>Valor: R$50,00</strong></p>
-            <button id="dessert" onclick="addCarrinho(event)" >Adicionar ao carrinho</button>
+            <button name="brownie" id="dessert" onclick="addCarrinho(event)" >Adicionar ao carrinho</button>
         </div>
         <div class="sobremesas">
           <h6>Chocolate</h6>
@@ -107,7 +107,7 @@
         <div class="bebidas">
           <h6>Refrigerante</h6>
           <p><strong>Valor: R$50,00</strong></p>
-            <button id="drinks" onclick="addCarrinho(event)">Adicionar ao carrinho</button>
+            <button name="coca" value="coca" id="drinks" onclick="addCarrinho(event)">Adicionar ao carrinho</button>
         </div>
         <div class="bebidas">
           <h6>Refrigerante</h6>
@@ -130,75 +130,26 @@
           <button id="drinks" onclick="addCarrinho(event)" type="button">Adicionar ao carrinho</button>
         </div>
     </div>
-    <div id="order"></div>
+    <div id="order">
+      {% if calabresa or brownie or coca %}
+      <p><strong>TOTAL:</strong> <span>{{ total }}</span></p><button name="view_order" value="view_order">Ver pedido</button>
+      {% endif %}
+    </div>
+
 </form>
  
 <script type=text/javascript>
 
-    
-
- function ver_pedido() {
-  console.log("Função ver pedido()")
-  const order = localStorage.getItem('order')
-  console.log("Dados do localStorage:", order)
-  window.location.href = `/client_order?order=${encodeURIComponent(order)}`
- 
- }
-
-
-
-
   const isLogIn = {{ isLoggedIn | tojson | safe }}
-  let total = 0
   function addCarrinho(event) {
-      event.preventDefault()
     
-      let pedido = document.getElementById('order')
-    
-      let  itemName, itemPrice;
-
-      
       if (!isLogIn) {
           window.alert("Você precisa estar logado para continuar")
       } else {
         window.alert("Adcionado item com sucesso!")
-        if (event.target.id === 'drinks'){
-          itemName = 'Refrigerante'
-          itemPrice = 10
-          total += itemPrice
-          
-        }        
-        if (event.target.id === 'calabresa'){
-          itemName = 'Pizza de Calabresa'
-          itemPrice = 50
-          total += itemPrice
-          
-        }        
-        else if (event.target.id === 'dessert'){
-          itemName = 'Sobremesa'
-          itemPrice = 20
-          total += itemPrice
-        } else {
-          itemName = 'Pizza'
-          itemPrice = 50
-          total += itemPrice
-        }
-        console.log("Total atualizado:", total)
-       
-
-        let order = JSON.parse(localStorage.getItem('order')) || []
-        order.push({ name: itemName, price: itemPrice})
-        localStorage.setItem('order', JSON.stringify(order))
-        
-        let button = document.createElement("button")
-        button.type = "button"
-        button.innerText = "Ver pedido"
-        button.onclick = ver_pedido
-        pedido.innerHTML = `<p>Total: R${total}.00`
-        pedido.appendChild(button)  
-        
-      }
+        event.target.form.submit()
   }
+}
 </script>
 {% endblock %}
 

@@ -42,8 +42,8 @@ def create_table():
     con.commit()
     con.close()
 
-date = datetime.now()
-year = date.year
+date = datetime.now().strftime("Data: %d-%m-%Y | Horário: %H:%M:%S")
+year = datetime.now().year
 
 
 def create_orders_table():
@@ -54,9 +54,8 @@ def create_orders_table():
     user_id INTEGER NOT NULL,
     item TEXT NOT NULL,
     quantity INTEGER,
-    value NUMERIC,
-    total_order NUMERIC,
-    time_order DATETIME,
+    value FLOAT,
+    time_order TEXT,
     FOREIGN KEY (user_id) REFERENCES users(id)
     )
     """)
@@ -82,8 +81,14 @@ def login_required(f):
 @app.context_processor
 def inject_logged_in_status():
    isLoggedIn = "user_id" in session
-  
-   return dict(isLoggedIn = isLoggedIn)
+   order_count = 0
+   if isLoggedIn:
+      con = sqlite3.connect("database.db")
+      cur = con.cursor()
+      order_count = cur.execute("SELECT COUNT(*) FROM orders WHERE user_id = ?", (session["user_id"],)).fetchone()[0]
+      con.commit()
+      con.close()   
+   return dict(isLoggedIn = isLoggedIn, order_count = order_count)
 
 
 @app.route('/')
@@ -142,30 +147,20 @@ def register():
    if request.method == "POST":
       if request.is_json:
          json_data = request.get_json()
-         print(json_data)
          full_adress = json.loads(json_data.get('full_adress'))
         
 
-         username = json_data.get("name")
-         email = json_data.get("email")
-         password = json_data.get("password") 
-         birthday = json_data.get("birthday")
-         
-
-         print("Username:", username)
-         print("Email:", email)
-         print("Password:", password)
-         print("Birthday:", birthday)
-         print("Full Adress: ", full_adress)
-    
+         username = request.form.get("name")
+         email = request.form.get("email")
+         password = request.form.get("password") 
+         birthday = request.form.get("birthday")
 
         
          if not username or not email or not password or not birthday or not full_adress:
            return jsonify({"error": "Must provide all the fields"}), 400
          
       
-         user = cur.execute("SELECT * FROM users WHERE name = ?",(username,)).fetchone()
-         
+         user = cur.execute("SELECT * FROM users WHERE name = ?",(username,)).fetchone()         
          emailUser = cur.execute("SELECT * FROM users WHERE email = ?",(email,)).fetchone()
         
 
@@ -175,9 +170,7 @@ def register():
             return jsonify({"exists": "email"}), 400
    
          
-
-         
-      
+ 
          hash_password = generate_password_hash(
                password, method='scrypt', salt_length=16)
          
@@ -216,14 +209,58 @@ def register():
 
 
 
-
 @app.route("/menu", methods=["GET", "POST"])
 def menu():
    isLoggedIn = "user_id" in session
-   print(f"O usuário está logado {isLoggedIn}")
-   if request.method == "POST":
-       return render_template("menu.html", isLoggedIn = isLoggedIn)
-   return render_template("menu.html", isLoggedIn = isLoggedIn)
+   con = sqlite3.connect('database.db')
+   cur = con.cursor()
+
+   calabresa = request.form.get('calabresa')
+   brownie = request.form.get('brownie')
+   coca = request.form.get('coca')
+   view_order = request.form.get('view_order')
+
+   if "total" not in session:   
+      session["total"] = 0
+
+
+   if request.method == "POST" and isLoggedIn:
+     
+       if calabresa:
+         value = 50.00
+         session["total"] += value
+         cur.execute("""
+                           INSERT INTO orders(user_id,item,quantity,value,time_order)
+                           VALUES(?, ?, ?, ?, ?)
+                           """, (session["user_id"], "Pizza de Calabresa", 1, value, date)) 
+         con.commit()
+       if brownie:
+         value = 20.00
+         session["total"] += value
+         cur.execute("""
+                           INSERT INTO orders(user_id,item,quantity,value,time_order)
+                           VALUES(?, ?, ?, ?, ?)
+                           """, (session["user_id"], "Brownie de Chocolate", 1, value, date)) 
+         con.commit()
+       if coca:
+         print("Processing coca")
+         value = 10.00
+         session["total"] += value
+         cur.execute("""
+                           INSERT INTO orders(user_id,item,quantity,value,time_order)
+                           VALUES(?, ?, ?, ?, ?)
+                           """, (session["user_id"], "Coca-Cola", 1, value, date)) 
+         con.commit()  
+        
+       con.close()    
+       if view_order:
+            return redirect("/client_order") 
+   return render_template("menu.html",
+                           isLoggedIn = isLoggedIn,
+                             calabresa = calabresa,
+                             brownie = brownie, 
+                             coca = coca,
+                             total = session["total"])
 
 
 @app.route("/client_order", methods=["GET", "POST"])
@@ -231,39 +268,17 @@ def menu():
 def client_order():
    con = sqlite3.connect("database.db")
    cur = con.cursor()
+   order = cur.execute("SELECT * FROM orders WHERE user_id = ?", (session["user_id"],)).fetchall()
+   total =  cur.execute("""
+                         SELECT SUM(value) as total FROM orders WHERE user_id = ?""", (session["user_id"],)).fetchone()
 
    if request.method == 'POST':
-      print("Dados da requisição POST:", request.form)
-      remove_index = request.form.get('remove_index')
-      print("Índice para remoção:", remove_index)
-      if remove_index is not None:
-         remove_index = int(remove_index)
-         order = session.get('order', [])
-         print("DADOS ARMAZENADOS: ", order)
-         if 0 <= remove_index < len(order):
-            print("Removendo item na posição: ", remove_index)
-            del order[remove_index]
-            session['order'] = order
-            session.modified = True
-            return jsonify({ 'success': True})
-      
-   print(session)
-   order = request.args.get('order')
-   print("Dados recebidos no backend:", order)
-   if order:
-      try:
-         order = json.loads(order)
-         session['order'] = order
-         session.modified = True
-      except json.JSONDecodeError as e:
-         print("ERRO AO DECODIFICAR JSON:", e)
-         order = []   
-   else:
-      order = session.get('order', [])   
-      print("Dados armazenados na sessão:", session.get('order'))
+      remove = request.form.get('remove')
+     
+      # if remove:
 
-   total = sum(item['price'] for item in order if 'price' in item)
-   return render_template("client_order.html", order=order, total = total)
+   
+   return render_template("client_order.html", order = order, total = total[0])
    
  
 

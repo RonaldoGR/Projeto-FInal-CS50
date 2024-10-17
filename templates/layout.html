@@ -28,6 +28,11 @@
                 <li class="nav-item">
                   <a class="nav-link" href="/menu">Menu</a>
               </li>
+              {% if order_count > 0 %}
+                  <li class="nav-item">
+                    <a class="nav-link" href="/client_order">Meu pedido</a>
+                </li>
+              {% endif %}  
             </ul>
             <ul class="navbar-nav ms-auto mt-2">
               <li class="nav-item"><a class="nav-link" href="/logout">Log Out</a></li>

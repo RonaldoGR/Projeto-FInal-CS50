@@ -11,62 +11,17 @@ Client order
 <table>
  
   {% for item in order %}
-    <tr data-index="{{ loop.index0 }}">
-      <td class="text-end"> {{ item.name }}   {{ item.price }}   <button type="button"  onclick="remover(this)">Remover</button></td> 
+    <tr>
+      <td class="text-end"> {{ item[1] }} <span>PREÇO: R${{ item[3] }}</span>   <button id="remove" name="remove" value="remove" type="button">Remover</button> </td> 
     </tr>  
 
   {% endfor %}
 </table>
     
-    <td>TOTAL: {{ total }}</td><br>
+    <td><strong>TOTAL</strong>: R${{ total }}</td><br>
     <button>Finalizar pedido</button>
   
 
 
 
-<script>
-
-  function atualizarIndices() {
-    let rows = document.querySelectorAll('tr[data-index]')
-    rows.forEach((rows, newIndex) => {
-      rows.setAttribute('data-index', newIndex)
-    })
-  }
-
-
-
-  function remover(button) {
-    let row = button.closest('tr')
-    let index = parseInt(row.getAttribute('data-index'), 10)
-    console.log("Índice a ser removido:", index);
-    let order = JSON.parse(localStorage.getItem('order'))
-
-    let formData = new FormData()
-    formData.append('remove_index', index)
-
-        fetch(`/client_order`, {
-          method: 'POST',
-          body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-         console.log("Item removido com sucesso")
-         row.remove()
-         console.log(order)
-         order.splice(index, 1) 
-         console.log(order)
-         localStorage.setItem('order', JSON.stringify(order))
-         atualizarIndices()
-        
-        //  window.location.reload()
-        }
-      })
-      .catch(error => {
-        console.log("Erro ao remover item", error)
-      })
-          
-  }
-
-</script>
 {% endblock %}

@@ -10,6 +10,12 @@ body {
   background-color:#fde3e3;
 }
 
+
+span, #remove {
+  margin-left: 20px
+}
+
+
 #menu_container {
   display: flex;
   justify-content: center;
