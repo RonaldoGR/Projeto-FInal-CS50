@@ -14,7 +14,7 @@
         <h6>Pizza de Calabresa</h6>
         <p>Ingredientes: Massa artesanal, molho de tomate, mozzarela, calabresa, cebola roxa e orégano.<br>
           <strong>Valor: R$50,00</strong></p>
-          <button id="calabresa" value="calabresa" name="calabresa" onclick="addCarrinho(event)">Adicionar ao carrinho</button>
+          <button  type="submit" id="calabresa" value="calabresa" name="calabresa" onclick="addCarrinho(event)">Adicionar ao carrinho</button>
       </div>
       
       <div class="pizzas">
@@ -130,9 +130,10 @@
           <button id="drinks" onclick="addCarrinho(event)" type="button">Adicionar ao carrinho</button>
         </div>
     </div>
-    <div id="order">
-      {% if calabresa or brownie or coca %}
-      <p><strong>TOTAL:</strong> <span>{{ total }}</span></p><button name="view_order" value="view_order">Ver pedido</button>
+    <div id="order_menu" class="total_pedido">
+      {% if order %}
+      <strong>TOTAL:</strong>R${{ total }} <br>
+       <button  class="totalB" name="view_order" value="view_order">Ver pedido</button>
       {% endif %}
     </div>
 
@@ -141,13 +142,27 @@
 <script type=text/javascript>
 
   const isLogIn = {{ isLoggedIn | tojson | safe }}
-  function addCarrinho(event) {
-    
+  async function addCarrinho(event) {
+    event.preventDefault()
+     
       if (!isLogIn) {
           window.alert("Você precisa estar logado para continuar")
       } else {
         window.alert("Adcionado item com sucesso!")
         event.target.form.submit()
+
+      try {
+        let response = await fetch ('/menu', {
+          method:'GET',
+          headers: {'Content-type': 'application/json' }
+        
+        })
+
+        if (response.ok) {
+          let result = await response.json()
+          document.getElementById('order_menu').innerHTML = result.html
+        }
+      }   
   }
 }
 </script>

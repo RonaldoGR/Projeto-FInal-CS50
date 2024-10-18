@@ -6,22 +6,81 @@ Client order
 {% endblock %}
 
 {% block main %}
-<h1>Teste...</h1>
+<h1 id="pedido">Seu pedido</h1>
+{% if not partial %}
+<form action="/client_order" method="post">
+{% endif %}
+<div id="border">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+              <th class="text-start">Item</th>
+              <th class="text-center">Preço</th>
 
-<table>
- 
-  {% for item in order %}
-    <tr>
-      <td class="text-end"> {{ item[1] }} <span>PREÇO: R${{ item[3] }}</span>   <button id="remove" name="remove" value="remove" type="button">Remover</button> </td> 
-    </tr>  
+     </tr>
+</thead>
+    {% for item in order %}
+    <tbody>
+      <tr>
+        <td class="text-start"> {{ item[2] }} </td>
+        <td class="text-end"> PREÇO: R${{ item[4] }}  <button  id="remove" name="remove" value="{{ item[1] }}" type="submit" onclick="remover('{{ item[1] }}')">Remover</button> </td> 
+      </tr>  
+     {% endfor %}
+    </tbody>
+   
 
-  {% endfor %}
-</table>
-    
-    <td><strong>TOTAL</strong>: R${{ total }}</td><br>
-    <button>Finalizar pedido</button>
-  
+  </table>
+      {% if order %}
+      <div class="total_pedido">
+        <strong>TOTAL</strong>: R${{ total }}<br>
+        <button  class="totalB" name="finalizar" value="finalizar" onclick="finalizar()" type="submit">Finalizar pedido</button>
+      </div>  
+      {% endif %}
+</div>
+  <div id="finalizar_pedido">
 
+  </div>
+   {% if not partial %} 
+  </form> 
+  {% endif %}
+<script>
+  async function finalizar () {
+    let response = await fetch('/client_order', {
+      method: 'POST',
+      headers: {'Content-type': 'application/json'}
+    })
+
+    if (response.ok) {
+      let result = await response.json()
+      document.getElementById('finalizar_pedido').innerHTML = result.html
+    }
+
+  }
+
+
+
+
+
+  async function remover(item_id) {
+    try { 
+        let response = await fetch('/client_order', {
+            method:'POST',
+            headers: {'Content-type': 'application/json'},
+            body: JSON.stringify({ remove: item_id })
+        })
+
+        if (response.ok) {
+        
+            let result = await response.json()
+            document.getElementById(order).innerHTML = result.html
+        }
+      }
+        catch (error) {
+          console.log("ERROR: ", error)
+        }    
+  }
+
+</script>
 
 
 {% endblock %}
