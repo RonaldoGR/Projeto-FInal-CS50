@@ -30,36 +30,48 @@ Client order
    
 
   </table>
-      {% if order %}
-      <div class="total_pedido">
+      {% if order%}
+      <div class="total_pedido" id="finalizar">
         <strong>TOTAL</strong>: R${{ total }}<br>
-        <button  class="totalB" name="finalizar" value="finalizar" onclick="finalizar()" type="submit">Finalizar pedido</button>
+        {% if not finalizacao %}
+        <button  class="totalB" name="finalizar" value="finalizar" type="submit">Finalizar pedido</button>
+        <button  class="totalB" name="cancel" value="cancel" type="submit"  onclick="cancelar_pedido()">Cancelar</button>
+        {% endif %}
       </div>  
       {% endif %}
 </div>
+  {% if finalizacao %}
   <div id="finalizar_pedido">
-
+    <h6 id="pedido">SEU PEDIDO ESTÁ SENDO PREPARADO!</h6>
+      <p id="pedido">O pedido será entregue no endreço: <strong> Rua {{ adress.street }} número {{ adress.number }}, {{ adress.city }}, {{ adress.state }}, {{ adress.country }}!</strong><br>
+        <button  class="totalB" name="confirm" value="confirm" type="submit">Confirmar entrega</button>
+      </p>
   </div>
+  {% endif %}
    {% if not partial %} 
   </form> 
   {% endif %}
 <script>
-  async function finalizar () {
-    let response = await fetch('/client_order', {
-      method: 'POST',
-      headers: {'Content-type': 'application/json'}
-    })
+  async function cancelar_pedido() {
+    window.alert("Pedido cancelado!")
+    try { 
+        let response = await fetch('/client_order', {
+            method:'POST',
+            headers: {'Content-type': 'application/json'}
+            // body: JSON.stringify({ remove: order })
+        })
+        console.log(response)
 
-    if (response.ok) {
-      let result = await response.json()
-      document.getElementById('finalizar_pedido').innerHTML = result.html
-    }
-
+        if (response.ok) {
+        
+            let result = await response.json()
+            document.getElementById('border').innerHTML = result.html
+        }
+      }
+        catch (error) {
+          console.log("ERROR: ", error)
+        }    
   }
-
-
-
-
 
   async function remover(item_id) {
     try { 
@@ -68,11 +80,12 @@ Client order
             headers: {'Content-type': 'application/json'},
             body: JSON.stringify({ remove: item_id })
         })
+        console.log(response)
 
         if (response.ok) {
         
             let result = await response.json()
-            document.getElementById(order).innerHTML = result.html
+            document.getElementById(order).innerHTML = ''
         }
       }
         catch (error) {

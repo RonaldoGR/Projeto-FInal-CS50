@@ -148,6 +148,7 @@ def register():
       if request.is_json:
          json_data = request.get_json()
          full_adress = json.loads(json_data.get('full_adress'))
+       
         
          username = json_data.get("name")
          email = json_data.get("email")
@@ -259,6 +260,7 @@ def menu():
 @app.route("/client_order", methods=["GET", "POST"])
 @login_required
 def client_order():
+   
    con = sqlite3.connect("database.db")
    cur = con.cursor()
    order = cur.execute("SELECT * FROM orders WHERE user_id = ?", (session["user_id"],)).fetchall()
@@ -266,11 +268,17 @@ def client_order():
                          SELECT SUM(value) as total FROM orders WHERE user_id = ?""", (session["user_id"],)).fetchone()
 
    if request.method == 'POST':
+      finalizacao = request.form.get('finalizar')
+      
+      if finalizacao:
+         adress = cur.execute("SELECT full_adress FROM users WHERE id = ?", (session["user_id"],)).fetchone()
+         return  render_template("client_order.html", order = order, total = total[0], partial = False, finalizacao = finalizacao, adress = json.loads(adress[0]))
+      
+
       if request.is_json:
          json_data = request.get_json()
          remove = json_data.get('remove')
-         finalizar = json_data.get('finalizar')
-      
+         cancelar = json_data.get('cancel')
          if remove:
             print("DELETANDO ITEM")
             
@@ -279,15 +287,21 @@ def client_order():
             total =  cur.execute("""
                            SELECT SUM(value) as total FROM orders WHERE user_id = ?""", (session["user_id"],)).fetchone()
             
-            html = render_template("client_order.html", order = order, total = total[0])
+            html = render_template("client_order.html", order = order, total = total[0], partial =True)
             con.close()
             return jsonify ({'html': html })
-         # else:
-         #    return jsonify({'error': 'Invalid content type' }), 400
-         if finalizar:
-            print("FINALIZANDO O PEDIDO")
-            html = render_template ("client_order", order=order, total=total[0])
-            return jsonify({'html': html})
+         
+         if cancelar:
+            print("CANCELANDO")
+            cur.execute("DELETE FROM orders WHERE user_id = ?", (session["user_id"],)).fetchall()
+            con.commit
+            total =  cur.execute("""
+                              SELECT SUM(value) as total FROM orders WHERE user_id = ?""", (session["user_id"],)).fetchone()
+         con.close()
+         html = render_template("/")
+         return jsonify({'html': html})
+         
+         
      
    return render_template("client_order.html", order = order, total = total[0], partial = False)
    
