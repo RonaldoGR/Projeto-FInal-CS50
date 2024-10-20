@@ -4,7 +4,7 @@ from functools import wraps
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
 import sqlite3
-import json
+import time
 
 
 app = Flask(__name__,static_url_path='/static')
@@ -41,10 +41,7 @@ def create_table():
     con.commit()
     con.close()
 
-date = datetime.now().strftime("Data: %d-%m-%Y | Horário: %H:%M:%S")
-year = datetime.now().year
-
-
+   
 def create_orders_table():
     con = sqlite3.connect("database.db")
     cur = con.cursor()
@@ -52,15 +49,25 @@ def create_orders_table():
     CREATE TABLE IF NOT EXISTS orders(
     user_id INTEGER NOT NULL,
     item_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,              
-    item TEXT NOT NULL,
+    item TEXT,
     quantity INTEGER,
     value FLOAT,
+    date_order TEXT,  
     time_order TEXT,
+    date_delivery TEXT,            
+    time_delivery TEXT,           
     FOREIGN KEY (user_id) REFERENCES users(id)
     )
     """)
     con.commit()
-    con.close()
+    con.close()    
+
+data = datetime.now().strftime("Data: %d-%m-%Y")
+horario =  datetime.now().strftime("Horário: %H:%M:%S")
+data_entrega = datetime.now().strftime("Data de entrega: %d-%m-%Y")
+horario_entrega =  datetime.now().strftime("Horário de entrega: %H:%M:%S")
+
+
 
 
    
@@ -213,24 +220,24 @@ def menu():
        if calabresa:
          value = 50.00
          cur.execute("""
-                           INSERT INTO orders(user_id,item,quantity,value,time_order)
-                           VALUES(?, ?, ?, ?, ?)
-                           """, (session["user_id"], "Pizza de Calabresa", 1, value, date)) 
+                           INSERT INTO orders(user_id,item,quantity,value)
+                           VALUES(?, ?, ?, ?)
+                           """, (session["user_id"], "Pizza de Calabresa", 1, value)) 
          con.commit()
        if brownie:
          value = 20.00
          cur.execute("""
-                           INSERT INTO orders(user_id,item,quantity,value,time_order)
-                           VALUES(?, ?, ?, ?, ?)
-                           """, (session["user_id"], "Brownie de Chocolate", 1, value, date)) 
+                           INSERT INTO orders(user_id,item,quantity,value)
+                           VALUES(?, ?, ?, ?)
+                           """, (session["user_id"], "Brownie de Chocolate", 1, value)) 
          con.commit()
        if coca:
          print("Processing coca")
          value = 10.00
          cur.execute("""
-                           INSERT INTO orders(user_id,item,quantity,value,time_order)
-                           VALUES(?, ?, ?, ?, ?)
-                           """, (session["user_id"], "Coca-Cola", 1, value, date)) 
+                           INSERT INTO orders(user_id,item,quantity,value)
+                           VALUES(?, ?, ?, ?)
+                           """, (session["user_id"], "Coca-Cola", 1, value)) 
          con.commit()  
         
        order = cur.execute("SELECT * FROM orders WHERE user_id = ?", (session["user_id"],)).fetchall()
@@ -267,29 +274,70 @@ def client_order():
    total =  cur.execute("""
                          SELECT SUM(value) as total FROM orders WHERE user_id = ?""", (session["user_id"],)).fetchone()
 
+
    if request.method == 'POST':
       finalizacao = request.form.get('finalizar')
+      confirmar_entrega = request.form.get('confirm')
       
       if finalizacao:
          adress = cur.execute("SELECT full_adress FROM users WHERE id = ?", (session["user_id"],)).fetchone()
-         return  render_template("client_order.html", order = order, total = total[0], partial = False, finalizacao = finalizacao, adress = json.loads(adress[0]))
+       
+         cur.execute("""
+                                  UPDATE orders
+                                 SET date_order = ?, time_order = ? 
+                                 WHERE user_id = ? AND (time_order IS NULL OR time_order='') AND (date_order IS NULL OR date_order = 0)
+                                  
+                                   """, (data,horario,session["user_id"]))
+         con.commit()
+
+         horario_pedido = cur.execute("SELECT time_order FROM orders WHERE user_id =?", (session["user_id"],)).fetchone()
+
+         return  render_template("client_order.html", order = order, total = total[0], partial = False, finalizacao = finalizacao, adress = json.loads(adress[0]), horario_pedido = horario_pedido[0])
       
+      if confirmar_entrega:
+           
+             cur.execute("""
+                                 UPDATE orders
+                                 SET date_delivery = ?, time_delivery = ?
+                                 WHERE user_id = ? AND time_delivery IS NULL AND date_delivery IS NULL
+                                  
+                                   """, (data_entrega,horario_entrega,session["user_id"]))
+             con.commit()
+             return render_template("index.html")  
 
       if request.is_json:
          json_data = request.get_json()
          remove = json_data.get('remove')
          cancelar = json_data.get('cancel')
+
          if remove:
             print("DELETANDO ITEM")
             
             cur.execute("DELETE FROM orders WHERE user_id = ? AND item_id = ?",(session["user_id"], remove))
             con.commit()
+
+            cur.execute("DELETE FROM sqlite_sequence WHERE name = 'orders'")
+            con.commit()
+
+            order = cur.execute("SELECT * FROM orders WHERE user_id = ? ORDER BY item_id", (session["user_id"],)).fetchall()
+
+            for index, item in enumerate(order):
+               cur.execute("UPDATE orders SET item_id = ? WHERE user_id = ? AND item_id=?", (index + 1, session["user_id"], item["item_id"]))
+               con.commit()
+
             total =  cur.execute("""
                            SELECT SUM(value) as total FROM orders WHERE user_id = ?""", (session["user_id"],)).fetchone()
             
-            html = render_template("client_order.html", order = order, total = total[0], partial =True)
-            con.close()
-            return jsonify ({'html': html })
+            if total is None:
+               total = [0]
+            
+            order_count = cur.execute("SELECT COUNT(*) FROM orders WHERE user_id = ?", (session["user_id"],)).fetchone()[0]
+
+            if order_count == 0:
+                con.close() 
+                return jsonify({'redirect': True})
+            
+        
          
          if cancelar:
             print("CANCELANDO")
@@ -298,7 +346,7 @@ def client_order():
             total =  cur.execute("""
                               SELECT SUM(value) as total FROM orders WHERE user_id = ?""", (session["user_id"],)).fetchone()
          con.close()
-         html = render_template("/")
+         html = render_template("index.html")
          return jsonify({'html': html})
          
          

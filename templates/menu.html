@@ -142,29 +142,42 @@
 <script type=text/javascript>
 
   const isLogIn = {{ isLoggedIn | tojson | safe }}
-  async function addCarrinho(event) {
-    event.preventDefault()
+//   async function addCarrinho(event) {
+//     event.preventDefault()
      
-      if (!isLogIn) {
-          window.alert("Você precisa estar logado para continuar")
-      } else {
-        window.alert("Adcionado item com sucesso!")
-        event.target.form.submit()
+//       if (!isLogIn) {
+//           window.alert("Você precisa estar logado para continuar")
+//           return
+//       } else {
+       
 
-      try {
-        let response = await fetch ('/menu', {
-          method:'GET',
-          headers: {'Content-type': 'application/json' }
+//         window.alert("Adcionado item com sucesso!")
+//         event.target.form.submit()
         
-        })
+//         try {
+//           let response = await fetch ('/menu', {
+//             method:'GET',
+//             headers: {'Content-type': 'application/json' }
+          
+//           })
+//           console.log('Fetching /menu...');
+//           console.log("DIV ORDER MENU: ", document.getElementById('order_menu'))
+//           window.alert("pause")
+//           if (response.ok) {
+//             let result = await response.json()
+      
+//             document.getElementById('order_menu').innerHTML = result.html
+//           }
+//       } catch (error) {
+//         console.log('error: ', error)
+//       }
+//   }
+// }
 
-        if (response.ok) {
-          let result = await response.json()
-          document.getElementById('order_menu').innerHTML = result.html
-        }
-      }   
-  }
-}
+
+
+
+
 </script>
 {% endblock %}
 
