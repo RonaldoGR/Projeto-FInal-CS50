@@ -63,9 +63,9 @@ def create_orders_table():
     con.close()    
 
 data = datetime.now().strftime("Data: %d-%m-%Y")
-horario =  datetime.now().strftime("Horário: %H:%M:%S")
+horario =  datetime.now().strftime("%H:%M")
 data_entrega = datetime.now().strftime("Data de entrega: %d-%m-%Y")
-horario_entrega =  datetime.now().strftime("Horário de entrega: %H:%M:%S")
+horario_entrega =  datetime.now().strftime("Horário de entrega: %H:%M")
 
 
 
@@ -209,10 +209,15 @@ def menu():
    coca = request.form.get('coca')
    view_order = request.form.get('view_order')
 
+
+   if not isLoggedIn:
+      return render_template("menu.html")
    
    order = cur.execute("SELECT * FROM orders WHERE user_id = ?", (session["user_id"],)).fetchall()
    total =  cur.execute("""
                          SELECT SUM(value) as total FROM orders WHERE user_id = ?""", (session["user_id"],)).fetchone()
+   
+   
 
 
    if request.method == "POST" and isLoggedIn:            
@@ -249,10 +254,10 @@ def menu():
        if view_order:
             return redirect("/client_order") 
        
-   if request.method == "GET" and request.is_json:
-         html = render_template("menu.html", order=order, total=total[0])
-         con.close()
-         return jsonify({'html': html})
+   # if request.method == "GET" and request.is_json:
+   #       html = render_template("menu.html", order=order, total=total[0])
+   #       con.close()
+   #       return jsonify({'html': html})
 
 
    con.close()      
@@ -355,7 +360,6 @@ def client_order():
    
    
  
-
 
 
 

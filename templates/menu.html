@@ -127,7 +127,7 @@
         <div class="bebidas">
           <h6>Refrigerante</h6>
           <p><strong>Valor: R$50,00</strong></p>
-          <button id="drinks" onclick="addCarrinho(event)" type="button">Adicionar ao carrinho</button>
+          <button id="drinks" onclick="addCarrinho()" type="button">Adicionar ao carrinho</button>
         </div>
     </div>
     <div id="order_menu" class="total_pedido">
@@ -142,39 +142,16 @@
 <script type=text/javascript>
 
   const isLogIn = {{ isLoggedIn | tojson | safe }}
-//   async function addCarrinho(event) {
-//     event.preventDefault()
-     
-//       if (!isLogIn) {
-//           window.alert("Você precisa estar logado para continuar")
-//           return
-//       } else {
-       
 
-//         window.alert("Adcionado item com sucesso!")
-//         event.target.form.submit()
-        
-//         try {
-//           let response = await fetch ('/menu', {
-//             method:'GET',
-//             headers: {'Content-type': 'application/json' }
-          
-//           })
-//           console.log('Fetching /menu...');
-//           console.log("DIV ORDER MENU: ", document.getElementById('order_menu'))
-//           window.alert("pause")
-//           if (response.ok) {
-//             let result = await response.json()
-      
-//             document.getElementById('order_menu').innerHTML = result.html
-//           }
-//       } catch (error) {
-//         console.log('error: ', error)
-//       }
-//   }
-// }
-
-
+  function addCarrinho() {
+    if (!isLogIn) {
+      window.alert("Você precisa estar logado para continuar!")
+      return
+    } else {
+      window.alert("Adcionado item com sucesso!")
+      return
+    }
+  }
 
 
 
