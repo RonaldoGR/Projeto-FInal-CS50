@@ -48,6 +48,7 @@ def create_orders_table():
     cur.execute("""
     CREATE TABLE IF NOT EXISTS orders(
     user_id INTEGER NOT NULL,
+    order_id INTEGER NOT NULL,              
     item_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,              
     item TEXT,
     quantity INTEGER,
@@ -209,9 +210,10 @@ def menu():
    coca = request.form.get('coca')
    view_order = request.form.get('view_order')
 
+   current_order_id = cur.execute("SELECT MAX(order_id) FROM orders WHERE user_id = ? AND time_order IS NULL", (session["user_id"],)).fetchone()[0]
 
-   if not isLoggedIn:
-      return render_template("menu.html")
+   if current_order_id is None:
+          current_order_id = cur.execute("SELECT IFNULL(MAX(order_id), 0) + 1 FROM orders").fetchone()[0]     
    
    order = cur.execute("SELECT * FROM orders WHERE user_id = ?", (session["user_id"],)).fetchall()
    total =  cur.execute("""
@@ -220,29 +222,31 @@ def menu():
    
 
 
-   if request.method == "POST" and isLoggedIn:            
+   if request.method == "POST" and isLoggedIn:  
+            
+
      
        if calabresa:
          value = 50.00
          cur.execute("""
-                           INSERT INTO orders(user_id,item,quantity,value)
-                           VALUES(?, ?, ?, ?)
-                           """, (session["user_id"], "Pizza de Calabresa", 1, value)) 
+                           INSERT INTO orders(user_id,order_id,item,quantity,value)
+                           VALUES(?, ?, ?, ?, ?)
+                           """, (session["user_id"], current_order_id, "Pizza de Calabresa", 1, value)) 
          con.commit()
        if brownie:
          value = 20.00
          cur.execute("""
-                           INSERT INTO orders(user_id,item,quantity,value)
+                           INSERT INTO orders(user_id, order_id,item,quantity,value)
                            VALUES(?, ?, ?, ?)
-                           """, (session["user_id"], "Brownie de Chocolate", 1, value)) 
+                           """, (session["user_id"], current_order_id, "Brownie de Chocolate", 1, value)) 
          con.commit()
        if coca:
          print("Processing coca")
          value = 10.00
          cur.execute("""
-                           INSERT INTO orders(user_id,item,quantity,value)
+                           INSERT INTO orders(user_id, order_id,item,quantity,value)
                            VALUES(?, ?, ?, ?)
-                           """, (session["user_id"], "Coca-Cola", 1, value)) 
+                           """, (session["user_id"], current_order_id,"Coca-Cola", 1, value)) 
          con.commit()  
         
        order = cur.execute("SELECT * FROM orders WHERE user_id = ?", (session["user_id"],)).fetchall()
@@ -254,10 +258,7 @@ def menu():
        if view_order:
             return redirect("/client_order") 
        
-   # if request.method == "GET" and request.is_json:
-   #       html = render_template("menu.html", order=order, total=total[0])
-   #       con.close()
-   #       return jsonify({'html': html})
+
 
 
    con.close()      
@@ -278,6 +279,15 @@ def client_order():
    order = cur.execute("SELECT * FROM orders WHERE user_id = ?", (session["user_id"],)).fetchall()
    total =  cur.execute("""
                          SELECT SUM(value) as total FROM orders WHERE user_id = ?""", (session["user_id"],)).fetchone()
+   
+
+   order_time = cur.execute("SELECT * FROM orders WHERE user_id = ? AND time_order IS NOT NULL", (session["user_id"],)).fetchall()
+
+   current_order_id = cur.execute("SELECT MAX(order_id) FROM orders WHERE user_id = ? AND time_order IS NULL", (session["user_id"],)).fetchone()[0]
+
+   if current_order_id is None:
+          current_order_id = cur.execute("SELECT IFNULL(MAX(order_id), 0) + 1 FROM orders").fetchone()[0]     
+      
 
 
    if request.method == 'POST':
@@ -286,29 +296,36 @@ def client_order():
       
       if finalizacao:
          adress = cur.execute("SELECT full_adress FROM users WHERE id = ?", (session["user_id"],)).fetchone()
+
+         
        
          cur.execute("""
                                   UPDATE orders
                                  SET date_order = ?, time_order = ? 
-                                 WHERE user_id = ? AND (time_order IS NULL OR time_order='') AND (date_order IS NULL OR date_order = 0)
+                                 WHERE user_id = ? AND order_id = ? AND (time_order IS NULL OR time_order='') AND (date_order IS NULL OR date_order = 0)
                                   
-                                   """, (data,horario,session["user_id"]))
+                                   """, (data,horario,session["user_id"], current_order_id))
          con.commit()
 
          horario_pedido = cur.execute("SELECT time_order FROM orders WHERE user_id =?", (session["user_id"],)).fetchone()
+        
 
-         return  render_template("client_order.html", order = order, total = total[0], partial = False, finalizacao = finalizacao, adress = json.loads(adress[0]), horario_pedido = horario_pedido[0])
+         return  render_template("client_order.html", order = order, total = total[0], partial = False, finalizacao = finalizacao, adress = json.loads(adress[0]), horario_pedido = horario_pedido[0], order_time = order_time, confirmado = False)
       
       if confirmar_entrega:
-           
-             cur.execute("""
-                                 UPDATE orders
-                                 SET date_delivery = ?, time_delivery = ?
-                                 WHERE user_id = ? AND time_delivery IS NULL AND date_delivery IS NULL
-                                  
-                                   """, (data_entrega,horario_entrega,session["user_id"]))
-             con.commit()
-             return render_template("index.html")  
+            
+               cur.execute("""
+                                    UPDATE orders
+                                    SET date_delivery = ?, time_delivery = ?
+                                    WHERE user_id = ? AND time_delivery IS NULL AND date_delivery IS NULL
+                                    
+                                    """, (data_entrega,horario_entrega,session["user_id"]))
+               con.commit()
+
+               horario_delivery = cur.execute("SELECT time_delivery FROM orders WHERE user_id = ?", (session["user_id"],)).fetchone()
+               con.close()
+               return render_template("client_order.html", confirmado = True, order = order, total = total[0], partial = False, horario_delivery = horario_delivery[0])  
+   
 
       if request.is_json:
          json_data = request.get_json()
@@ -326,8 +343,9 @@ def client_order():
 
             order = cur.execute("SELECT * FROM orders WHERE user_id = ? ORDER BY item_id", (session["user_id"],)).fetchall()
 
+            # Atualizando o ID dos itens
             for index, item in enumerate(order):
-               cur.execute("UPDATE orders SET item_id = ? WHERE user_id = ? AND item_id=?", (index + 1, session["user_id"], item["item_id"]))
+               cur.execute("UPDATE orders SET item_id = ? WHERE user_id = ? AND item_id=?", (index + 1, session["user_id"], item[2]))
                con.commit()
 
             total =  cur.execute("""
@@ -356,7 +374,7 @@ def client_order():
          
          
      
-   return render_template("client_order.html", order = order, total = total[0], partial = False)
+   return render_template("client_order.html", order = order, total = total[0], partial = False, order_time = order_time)
    
    
  

@@ -10,47 +10,81 @@ Client order
 {% if not partial %}
 <form action="/client_order" method="post">
 {% endif %}
-<div id="border">
-  <table class="table table-striped">
-    <thead>
-      <tr>
-              <th class="text-start">Item</th>
-              <th class="text-center">Preço</th>
+{% if not confirmado  %}
+  <div id="border">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+                <th class="text-start">Item</th>
+                <th class="text-center">Preço</th>
+      </tr>
+  </thead>
+      {% for item in order %}
+      {% if  horario_pedido  %}
+        <tbody>
+          <tr>
+            <td class="text-start"> {{ item[3] }} </td>
+            <td class="text-center">  R${{ item[5] }}  </td> 
+          </tr>  
+        </tbody>
+          {% else %}
+        <tbody>
+          <tr>
+            <td class="text-start"> {{ item[3] }} </td>
+            <td class="text-center">  R${{ item[5] }}  <button  id="remove" name="remove" value="{{ item[1] }}" type="submit" onclick="remover('{{ item[1] }}')">Remover</button> </td> 
+          </tr>  
+          {% endif %}
+        {% endfor %}
+        </tbody>
+    
 
-     </tr>
-</thead>
-    {% for item in order %}
-    <tbody>
-      <tr>
-        <td class="text-start"> {{ item[2] }} </td>
-        <td class="text-end"> PREÇO: R${{ item[4] }}  <button  id="remove" name="remove" value="{{ item[1] }}" type="submit" onclick="remover('{{ item[1] }}')">Remover</button> </td> 
-      </tr>  
-     {% endfor %}
-    </tbody>
-   
-
-  </table>
-      {% if order%}
-      <div class="total_pedido" id="finalizar">
-        <strong>TOTAL</strong>: R${{ total }}<br>
-        {% if not finalizacao %}
-        <button  class="totalB" name="finalizar" value="finalizar" type="submit">Finalizar pedido</button>
-        <button  class="totalB" name="cancel" value="cancel" type="submit"  onclick="cancelar_pedido()">Cancelar</button>
+        </table>
+            {% if order%}
+            <div class="total_pedido" id="finalizar">
+                <strong>TOTAL</strong>: R${{ total }}<br>
+                {% if not finalizacao  %}
+                <button  class="totalB" name="finalizar" value="finalizar" type="submit">Finalizar pedido</button>
+                <button  class="totalB" name="cancel" value="cancel" type="submit"  onclick="cancelar_pedido()">Cancelar</button>
+                {% endif %}
+           </div>  
+            {% endif %}
+      </div>
+        {% if finalizacao %}
+        <div id="finalizar_pedido">
+          <h6 id="pedido">SEU PEDIDO ESTÁ SENDO PREPARADO!</h6>
+            <p id="pedido">O pedido será entregue no endreço: <strong> Rua {{ adress.street }} número {{ adress.number }}, {{ adress.city }}, {{ adress.state }}, {{ adress.country }}! O pedido foi feito as {{ horario_pedido }}!</strong><br>
+              <button  class="totalB" name="confirm" value="confirm" type="submit" onclick="confirmado()">Confirmar entrega</button>
+            </p>
+        </div>
         {% endif %}
-      </div>  
-      {% endif %}
-</div>
-  {% if finalizacao %}
-  <div id="finalizar_pedido">
-    <h6 id="pedido">SEU PEDIDO ESTÁ SENDO PREPARADO!</h6>
-      <p id="pedido">O pedido será entregue no endreço: <strong> Rua {{ adress.street }} número {{ adress.number }}, {{ adress.city }}, {{ adress.state }}, {{ adress.country }}! O pedido foi feito as {{ horario_pedido }}!</strong><br>
-        <button  class="totalB" name="confirm" value="confirm" type="submit" onclick="confirmado()">Confirmar entrega</button>
-      </p>
-  </div>
-  {% endif %}
-   {% if not partial %} 
-  </form> 
-  {% endif %}
+        {% else %}
+        <div id="border">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                      <th class="text-start">Item</th>
+                      <th class="text-center">Preço</th>
+              </tr>
+            </thead>
+            {% for item in order %}
+              <tbody>
+                <tr>
+                  <td class="text-start"> {{ item[3] }} </td>
+                  <td class="text-center">  R${{ item[5] }}  </td> 
+                </tr>  
+              </tbody>
+              {% endfor %}
+            </table>
+            <div class="total_pedido" id="finalizar">
+              <strong>TOTAL</strong>: R${{ total }}<br>
+            </div>
+          </div>
+              <h6 id="pedido">OBRIGADO! PEDIDO CONFIRMADO!</p>
+              
+              {% endif %}
+        {% if not partial %} 
+        </form> 
+        {% endif %}
 <script>
   function confirmado() {
     window.alert("Obrigado por confirmar o seu pedido!")
