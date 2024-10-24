@@ -270,7 +270,7 @@ def menu():
 
 
 
-@app.route("/client_order", methods=["GET", "POST"])
+@app.route("/client_order", methods=["GET", "POST", "DELETE"])
 @login_required
 def client_order():
    
@@ -293,11 +293,10 @@ def client_order():
    if request.method == 'POST':
       finalizacao = request.form.get('finalizar')
       confirmar_entrega = request.form.get('confirm')
+     
       
       if finalizacao:
          adress = cur.execute("SELECT full_adress FROM users WHERE id = ?", (session["user_id"],)).fetchone()
-
-         
        
          cur.execute("""
                                   UPDATE orders
@@ -326,13 +325,40 @@ def client_order():
                con.close()
                return render_template("client_order.html", confirmado = True, order = order, total = total[0], partial = False, horario_delivery = horario_delivery[0])  
    
+   
+      return render_template("client_order.html", order = order, total = total[0], partial = False, order_time = order_time)       
+        
+   if request.method == "DELETE":   
+      json_data = request.get_json() 
+      cancelar = json_data.get('cancel') 
+      remove = json_data.get('remove') 
 
-      if request.is_json:
-         json_data = request.get_json()
-         remove = json_data.get('remove')
-         cancelar = json_data.get('cancel')
+      if cancelar:
+          cur.execute("DELETE FROM orders WHERE user_id = ?", (session["user_id"],)).fetchall()
+          con.commit()
 
-         if remove:
+          cur.execute("DELETE FROM sqlite_sequence WHERE name = 'orders'")
+          con.commit()
+
+         # Atualizando o ID dos itens
+          for index, item in enumerate(order):
+                  cur.execute("UPDATE orders SET item_id = ? WHERE user_id = ? AND item_id=?", (index + 1, session["user_id"], item[2]))
+                  con.commit()
+
+          total =  cur.execute("""
+                                 SELECT SUM(value) as total FROM orders WHERE user_id = ?""", (session["user_id"],)).fetchone()
+                  
+          if total is None:
+                  total = [0]  
+            
+          order_count = cur.execute("SELECT COUNT(*) FROM orders WHERE user_id = ?", (session["user_id"],)).fetchone()[0]
+
+          if order_count == 0:
+                  con.close() 
+                  return jsonify({'redirect': True})       
+
+
+      if remove:
             print("DELETANDO ITEM")
             
             cur.execute("DELETE FROM orders WHERE user_id = ? AND item_id = ?",(session["user_id"], remove))
@@ -359,22 +385,8 @@ def client_order():
             if order_count == 0:
                 con.close() 
                 return jsonify({'redirect': True})
-            
         
-         
-         if cancelar:
-            print("CANCELANDO")
-            cur.execute("DELETE FROM orders WHERE user_id = ?", (session["user_id"],)).fetchall()
-            con.commit
-            total =  cur.execute("""
-                              SELECT SUM(value) as total FROM orders WHERE user_id = ?""", (session["user_id"],)).fetchone()
-         con.close()
-         html = render_template("index.html")
-         return jsonify({'html': html})
-         
-         
-     
-   return render_template("client_order.html", order = order, total = total[0], partial = False, order_time = order_time)
+   return render_template("client_order.html", order = order, total = total[0], partial = False, order_time = order_time)    
    
    
  

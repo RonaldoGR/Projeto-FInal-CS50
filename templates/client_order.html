@@ -94,30 +94,24 @@ Client order
 
 
   async function cancelar_pedido() {
-    window.alert("Pedido cancelado!")
-    try { 
-        let response = await fetch('/client_order', {
-            method:'POST',
-            headers: {'Content-type': 'application/json'}
-            // body: JSON.stringify({ remove: order })
-        })
-        console.log(response)
 
-        if (response.ok) {
-        
-            let result = await response.json()
-            document.getElementById('border').innerHTML = result.html
-        }
+    if (confirm("Você tem certeza que deseja cancelar esse pedido?")) {
+      const response = await fetch('client_order', {
+        method: 'DELETE',
+        headers: {'Content-type': 'application/json'},
+        body: JSON.stringify({ cancel: true })
+      })
+      if (response.ok) {
+      window.alert("Pedido cancelado!")
+      window.location.href='menu'
       }
-        catch (error) {
-          console.log("ERROR: ", error)
-        }    
+    }
   }
 
   async function remover(item_id) {
     try { 
         let response = await fetch('/client_order', {
-            method:'POST',
+            method:'DELETE',
             headers: {'Content-type': 'application/json'},
             body: JSON.stringify({ remove: item_id })
         })
